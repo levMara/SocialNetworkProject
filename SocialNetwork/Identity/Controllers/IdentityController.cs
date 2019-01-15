@@ -50,8 +50,8 @@ namespace Identity.Controllers
             }
         }
 
-        [Route("Register")]
-        public async Task<IHttpActionResult> Register(FullUser user, string token)
+        [Route("registerorupdate")]
+        public async Task<IHttpActionResult> RegisterOrUpdate(FullUser user, string token)
         {
             if (string.IsNullOrEmpty(token))
                 return BadRequest("Empty token");
@@ -65,51 +65,47 @@ namespace Identity.Controllers
 
             try
             {
-                FullUser newUser = _identityMng.Register(userId ,user);
-                if (newUser == null)
-                    return BadRequest("Registration to database failed.");
-                return Ok(newUser);
+                _identityMng.RegisterOrUpdate(userId, user);
+                return Ok();
             }
             catch (IdentityException e)
             {
                 return BadRequest(e.Message);
-            }                     
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return Content(HttpStatusCode.InternalServerError, e.Message);
-            }        
+            }
         }
-
-        [Route("Update")]
-        public async Task<IHttpActionResult> Update(FullUser updateUser, string token)
+        [Route("SetUserDetailsIfNotExists")]
+        public async Task<IHttpActionResult> SetUserDetailsIfNotExists(FullUser user, string token)
         {
             if (string.IsNullOrEmpty(token))
                 return BadRequest("Empty token");
 
-            if (updateUser == null)
-                return BadRequest("Error, No details were provided");
+            if (user == null)
+                return BadRequest("Error, No details were provided.");
 
             string userId = await VerifyEndDecrypt(token);
             if (string.IsNullOrEmpty(userId))
-                return BadRequest("Token not valid");
+                return BadRequest("Token not valid.");
 
             try
             {
-                updateUser.UserId = userId;
-                FullUser updatedUser =_identityMng.Update(userId, updateUser);
-                if (updatedUser == null)
-                    return BadRequest("Update failed.");
-                return Ok(updatedUser);
+                _identityMng.Get(userId);
             }
             catch (IdentityException e)
             {
-                return BadRequest(e.Message);
+                _identityMng.RegisterOrUpdate(userId, user);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Content(HttpStatusCode.InternalServerError, e.Message);
             }
+            return Ok();
+
         }
+
 
         private async Task<string> VerifyEndDecrypt(string token)
         {

@@ -25,7 +25,7 @@ namespace IdentityBL
             };
         }
 
-        public void Add<T>(T item) where T : new()
+        public void AddOrUpdate<T>(T item) where T : new()
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
             {
@@ -49,7 +49,7 @@ namespace IdentityBL
                 return t;
             }
         }
-
+        
         public T Update<T>(string key, T item) where T : class
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))

@@ -11,7 +11,6 @@ namespace IetntityBL.Interfaces
     {
         FullUser Get(string userId);
 
-        FullUser Register(string userId ,FullUser user);
-        FullUser Update(string userId, FullUser updateUser);
+        void RegisterOrUpdate(string userId ,FullUser user);
     }
 }

@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dal\FacebookUserService.cs" />
     <Compile Include="Exceptiones\UserException.cs" />
     <Compile Include="Dal\DynamoService.cs" />
     <Compile Include="Dal\UserService.cs" />
@@ -75,6 +76,8 @@
     <Compile Include="Interfaces\IToken.cs" />
     <Compile Include="Interfaces\ITokenMng.cs" />
     <Compile Include="Interfaces\IUserMng.cs" />
+    <Compile Include="Manageres\FacebookTokenManager.cs" />
+    <Compile Include="Manageres\FacebookUserManager.cs" />
     <Compile Include="Manageres\TokenManager.cs" />
     <Compile Include="Dal\TokenService.cs" />
     <Compile Include="Manageres\UserManager.cs" />

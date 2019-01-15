@@ -14,6 +14,17 @@ namespace Authetication.Models
 
         public string UserId { get; set; }
 
-        public string Password { get; set; }   
+        public string Password { get; set; }
+        
+    }
+
+    [DynamoDBTable("FacebookUsers")]
+    public class FacebookUser
+    {
+        [DynamoDBHashKey]
+        public string FacebookId { get; set; }
+
+        public string UserId { get; set; }
+
     }
 }
