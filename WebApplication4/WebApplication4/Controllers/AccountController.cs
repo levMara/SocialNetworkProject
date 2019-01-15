@@ -60,19 +60,27 @@ namespace WebApplication4.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult> FacebookLogin(FacebookLoginModel model)
+
+        public ActionResult FacebookLoginError()
         {
-            var result = await AccountManager.FacebookLogin(model.AccessToken, new FullUser(model.FullName, model.BirthDay, model.City, model.WorkPlace));
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<bool> FacebookLogin(FacebookLoginModel model)
+        {
+            
+
+            var result = await AccountManager.FacebookLoginAsync(model.AccessToken, new FullUser(model.FullName, model.BirthDay, model.City, model.WorkPlace));
             if (result.Success)
             {
                 UserToken = result.Token;
                 DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
 
-                return RedirectToAction("Index", "Home");
+                return true;
             }
             else
-                return View("FacebookLoginError"); 
+                return false;
         }
 
         //

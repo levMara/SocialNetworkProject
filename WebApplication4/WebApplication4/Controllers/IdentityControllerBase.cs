@@ -50,12 +50,12 @@ namespace WebApplication4.Controllers
 
         protected async Task<bool> Authorized()
         {
-           return await AccountManager.IsUserAuthorized(UserToken);
+           return await AccountManager.IsUserAuthorizedAsync(UserToken);
         }
 
         public async Task RefreshToken()
         {
-            UserToken= await AccountManager.RefreshToken(UserToken);
+            UserToken= await AccountManager.RefreshTokenAsync(UserToken);
         }
 
         protected ActionResult AccountLogin()
@@ -67,6 +67,7 @@ namespace WebApplication4.Controllers
         {
             ModelState.AddModelError("", errorMessage);
         }
+
         protected ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

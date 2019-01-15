@@ -39,17 +39,6 @@ namespace WebApplication4.BL
 
     }
 
-    public class FacebookLoginResult : ResultBase
-    {
-        public bool UserExisted { get; set; }
-        public string Token { get; set; }
-        public FacebookLoginResult() { }
-        public FacebookLoginResult(bool success, bool userExisted, string token, string userErrorMessage = null) : base(success, userErrorMessage)
-        {
-            this.UserExisted = userExisted;
-            this.Token = token;
-        }
-    }
 
     public class RegisterResult : ResultBase
     {
@@ -92,7 +81,12 @@ namespace WebApplication4.BL
         {
             public string Message { get; set; }
         }
+
         #region Helpers
+
+        //recieves HttpResponseMessage,  returns a ResultBase with message as in httpResponseMessage or defaultUserErrorMessage
+        //depending on if status code is BadRequest or not, respectively.
+        //and then casts the result to a ResultModel
         private static async Task<ResultModel> ReturnErrorResult<ResultModel>(HttpResponseMessage httpResponseMessage, string defaultUserErrorMessage) where ResultModel : ResultBase, new()
         {
             ResultModel result = new ResultModel { Success= false, UserErrorMessage = defaultUserErrorMessage};
@@ -129,7 +123,7 @@ namespace WebApplication4.BL
             if (registerResult.Item1.IsSuccessStatusCode)
             {
                 var userToken = registerResult.Item2;
-                var changeDetailsResult = await ChangeUserDetails(userToken, userDetails,true);
+                var changeDetailsResult = await ChangeUserDetailsAsync(userToken, userDetails);
                 return new RegisterResult(changeDetailsResult.Success, userToken, changeDetailsResult.UserErrorMessage);
             }
             else
@@ -139,16 +133,13 @@ namespace WebApplication4.BL
 
 
 
-        internal static async Task<ChangeUserDetailsResult> ChangeUserDetails(string userToken, FullUser userDetails, bool firstTime)
+        internal static async Task<ChangeUserDetailsResult> ChangeUserDetailsAsync(string userToken, FullUser userDetails)
         {
 
             Tuple<HttpResponseMessage, FullUser> changeDetailsResult;
 
-            if (firstTime)
-                changeDetailsResult = await identityServiceAccess.PostData<FullUser, FullUser>($"identity/register?token={userToken}", userDetails);//TODO check
-            else
-                changeDetailsResult = await identityServiceAccess.PostData<FullUser, FullUser>($"identity/update?token={userToken}", userDetails);//TODO check
-            
+            changeDetailsResult = await identityServiceAccess.PostData<FullUser, FullUser>($"identity/registerorupdate?token={userToken}", userDetails);//TODO check
+
             if (changeDetailsResult.Item1.IsSuccessStatusCode)
                 return new ChangeUserDetailsResult(true);
             else
@@ -157,25 +148,35 @@ namespace WebApplication4.BL
 
         }
 
-        internal static async Task<SignInResult> FacebookLogin(string facebookAccessToken, FullUser userDetails)
+        internal static async Task<ChangeUserDetailsResult> SetUserDetailsIfNotExistsAsync(string userToken, FullUser userDetails)
         {
-            //TODO verify access token in the server
+            
+            var changeDetailsResult = await identityServiceAccess.PostData<FullUser>($"identity/SetUserDetailsIfNotExists?token={userToken}", userDetails);//TODO check
 
-            return new SignInResult(true, "token abcdefg");
+            if (changeDetailsResult.IsSuccessStatusCode)
+                return new ChangeUserDetailsResult(true);
+            else
+                return (await (ReturnErrorResult<ChangeUserDetailsResult>(changeDetailsResult, "failed to set user info")));
 
-            var facebookLoginResult = await authServiceAccess.GetData<FacebookLoginResult>($"facebooklogin/login?facebookAccessToken={facebookAccessToken}");//TODO check
+        }
+
+
+        internal static async Task<SignInResult> FacebookLoginAsync(string facebookAccessToken, FullUser userDetails)
+        {
+            
+            var facebookLoginResult = await authServiceAccess.GetData<string>($"facebooklogin/login?facebookToken={facebookAccessToken}");//TODO check
             if (facebookLoginResult.Item1.IsSuccessStatusCode)
             {
-                bool userExisted = facebookLoginResult.Item2.UserExisted;
-                string userToken = facebookLoginResult.Item2.Token;
+                //bool userExisted = facebookLoginResult.Item2.UserExisted;
+                string userToken = facebookLoginResult.Item2;
 
-                if (!userExisted)
-                {
-                    var changeDetailsResult = await ChangeUserDetails(userToken, userDetails,true);
+                //if (!userExisted)
+                //{
+                    var changeDetailsResult = await SetUserDetailsIfNotExistsAsync(userToken, userDetails);
                     return new SignInResult(changeDetailsResult.Success, userToken, changeDetailsResult.UserErrorMessage);
                     //throw new NotImplementedException();
-                }
-                return new SignInResult(true, userToken);
+                //}
+                //return new SignInResult(true, userToken);
 
             }
             else
@@ -184,18 +185,6 @@ namespace WebApplication4.BL
 
         internal static async Task<ChangePasswordResult> ChangePasswordAsync(string userToken, string oldPassword, string newPassword)
         {
-            //var token = getToken(userToken);
-            //if (token.Valid)
-            //{
-            //    if (userpass[token.Username] != oldPassword)
-            //        return new ChangePasswordResult(false, "incorrect password");
-            //    userpass[token.Username] = newPassword;
-            //    return new ChangePasswordResult(true);
-            //}
-            //else
-            //    return new ChangePasswordResult(false, "token expired");
-
-            //TODO uncomment and change
             var result = await authServiceAccess.GetData<string>($"login/changepassword?token={userToken}&oldpassword={oldPassword}&newpassword={newPassword}");//TODO change
             if (result.Item1.IsSuccessStatusCode)
             {
@@ -208,8 +197,6 @@ namespace WebApplication4.BL
 
         public static async Task<FullUser> GetUserInfoAsync(string userToken)
         {
-          
-  
             var decryptUserResult = await identityServiceAccess.GetData<FullUser>($"identity/get?token={userToken}");
             if (decryptUserResult.Item1.IsSuccessStatusCode)
                 return decryptUserResult.Item2;
@@ -217,7 +204,7 @@ namespace WebApplication4.BL
 
         }
 
-        public async static Task<bool> IsUserAuthorized(string userToken)
+        public async static Task<bool> IsUserAuthorizedAsync(string userToken)
         {
             var isTokenValidResult = await authServiceAccess.GetData<bool>($"token/Verify?token={userToken}");
             if (isTokenValidResult.Item1.IsSuccessStatusCode)
@@ -226,7 +213,7 @@ namespace WebApplication4.BL
 
         }
 
-        internal static async Task<string> RefreshToken(string userToken)
+        internal static async Task<string> RefreshTokenAsync(string userToken)
         {
 
             var newTokenResult = await authServiceAccess.GetData<string>($"token/refresh?token={userToken}");

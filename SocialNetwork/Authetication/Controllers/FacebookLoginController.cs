@@ -1,93 +1,68 @@
-﻿using BL.Exceptiones;
+﻿using Authetication.Models;
+using BL.Exceptiones;
+using BL.Manageres;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
 namespace Authetication.Controllers
 {
- 
-    //public class FacebookLoginController : ApiController
-    //{
-    //   // ILogin _loginMng;
-    //  //  IUserMng _userMng;
 
-    //   //public FacebookLoginController(ILogin loginMng, IUserMng userMng)
-    //   // {
-    //   //     _loginMng = loginMng;
-    //   //     _userMng = userMng;
-    //   // }
+    public class FacebookLoginController : ApiController
+    {
+        //   // ILogin _loginMng;
+         FacebookUserManager _userMng;//TODO use interfaces
 
-    //    [HttpGet]
-    //    [Route("api/FacebookLogin/Login/{facebookToken}")]
-    //    public IHttpActionResult Login(string facebookToken)
-    //    {
-    //        if (string.IsNullOrEmpty(facebookToken))
-    //        {
-    //            return BadRequest("Token missing");
-    //        }
+        //TODO use interfaces
+        public FacebookLoginController(/*ILogin loginMng, IUserMng userMng*/)
+        {
+            //_loginMng = loginMng;
+            //TODO use interfaces
+            _userMng = new FacebookUserManager(null);
+        }
 
-    //        string token;
-    //        try
-    //        {
-    //           // Verify(token);
-    //           // token = _loginMng.Login(userName, pass);
-    //        }
-    //        catch (Exception e)
-    //        {
-    //            return Content(HttpStatusCode.InternalServerError, e.Message);
-    //        }
 
-    //       // return Content(HttpStatusCode.OK, token);
-    //    }
+        private class FacebookLoginResponse
+        {
+            public bool UserExisted { get; set; }
+            public string Token { get; set; }
+        }
 
-    //    [HttpPost]
-    //    [Route("api/FacebookLogin/Register/{facebookToken}")]
-    //    public IHttpActionResult Register(string facebookToken)
-    //    {
-    //        if (string.IsNullOrEmpty(facebookToken))
-    //        {
-    //            return BadRequest("Token missing");
-    //        }
+        [HttpGet]
+        public async Task<IHttpActionResult> Login(string facebookToken)
+        {
+            
+            //TODO verify access token in the server
+            string appToken = "523392351508330|uhPdjs-O_mQJI8aKCvguC3vhMbM";
+            Utils.ApiAccess api = new Utils.ApiAccess("https://graph.facebook.com/");
+            var response = await api.GetData<dynamic>($"debug_token?input_token={facebookToken}&access_token={appToken}");
+            if (response.Item1.IsSuccessStatusCode)
+            {
+                bool isTokenValid = response.Item2["data"]["is_valid"];
+                string facebookUserId = response.Item2["data"]["user_id"];
 
-    //        string token;
-    //        try
-    //        {
-    //           // token = _userMng.Add(userName, pass);
-    //        }
+                FacebookUser user = null;
+                string userToken = null;
+                try
+                {
+                    user = _userMng.Get(facebookUserId);
+                    userToken = _userMng.Login(facebookUserId);
+                }
+                catch (EntityNotExistsException)
+                {
+                    userToken = _userMng.Add(facebookUserId);
+                }
 
-    //        catch (IncorrectDetailsException e)
-    //        {
-    //            return BadRequest(e.Message);
-    //        }
+                if (userToken != null)
+                    return Ok(userToken);
 
-    //        catch (DetailsNotValidException e)
-    //        {
-    //            return BadRequest(e.Message);
-    //        }
-
-    //        catch (Exception e)
-    //        {
-    //            return Content(HttpStatusCode.InternalServerError, e.Message);
-    //        }
-
-    //        if (string.IsNullOrEmpty(token))
-    //        {
-    //            return BadRequest("Registration to database failed.");
-    //        }
-
-    //        return Content(HttpStatusCode.OK, token);
-    //    }
-        
-    //    //private bool Verify(string facebookToken)
-    //    //{
-    //    //    using (var client = new HttpClient())
-    //    //    {
-    //    //       // client.BaseAddress;
-    //    //    }
-    //    //}
-    //}
+            }
+            return BadRequest("failed to login");
+        }
+    }
 }

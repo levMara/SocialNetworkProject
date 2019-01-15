@@ -31,27 +31,14 @@ namespace IetntityBL.Manageres
             return user;
         }
 
-        public FullUser Register(string userId, FullUser user)
+        public void RegisterOrUpdate(string userId, FullUser user)
         {
             if (string.IsNullOrEmpty(userId) || user == null)
                 throw new IncorrectDetailsException("User details or user id missing.");
 
             user.UserId = userId;
-            FullUser addedUser =_fullUserService.Add(user);
-            if(addedUser == null)
-                throw new IdentityException("faild register to db.");
-            return addedUser;
+            _fullUserService.AddOrUpdate(user);
         }
-
-        public FullUser Update(string userId, FullUser updateUser)
-        {
-            if (string.IsNullOrEmpty(userId) || updateUser == null)
-                throw new IncorrectDetailsException("User details or user id missing.");
-
-            FullUser updatedUser = _fullUserService.Update(userId, updateUser);
-            if (updatedUser == null)
-                throw new IdentityException("faild to update.");
-            return updatedUser;
-        }
+        
     }
 }

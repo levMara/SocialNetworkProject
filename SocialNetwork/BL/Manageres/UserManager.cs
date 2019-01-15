@@ -25,7 +25,7 @@ namespace BL.Manageres
             _userService = new UserService();
             _registerService = new RegisterService();
             _checkLogin = new CheckLogin();
-            _tokenMng = tokenMng; 
+            _tokenMng = tokenMng;
         }
 
         public string Add(string userName, string pass)

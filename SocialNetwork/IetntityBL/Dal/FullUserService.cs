@@ -18,20 +18,16 @@ namespace IdentityBL.Dal
             _dynamoService = new DynamoService();
         }
 
-        public FullUser Add(FullUser fullUser)
+        public void AddOrUpdate(FullUser fullUser)
         {
-            _dynamoService.Add<FullUser>(fullUser);
-            return fullUser;
+            _dynamoService.AddOrUpdate<FullUser>(fullUser);
+            
         }
 
         public FullUser Get(string userId)
         {
             return _dynamoService.Get<FullUser>(userId);
         }
-
-        public FullUser Update(string userId, FullUser updateUser)
-        {
-            return _dynamoService.Update<FullUser>(userId, updateUser);
-        }
+        
     }
 }
