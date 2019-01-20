@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using System;
+using WebApplication4.BL;
 
 namespace WebApplication4.Models
 {
@@ -42,5 +43,9 @@ namespace WebApplication4.Models
         [Display(Name = "Work place")]
         public string WorkPlace { get; set; }
     }
-    
+
+    public class BlockedUsersViewModel{
+        public int UnblockUserId;
+        public IEnumerable<UserIdAndName> Users;
+    }
 }

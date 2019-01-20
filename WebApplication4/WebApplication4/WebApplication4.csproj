@@ -225,6 +225,7 @@
     <Compile Include="Controllers\IdentityControllerBase.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PostsController.cs" />
+    <Compile Include="Controllers\SocialController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -284,6 +285,8 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Account\FacebookLoginError.cshtml" />
     <Content Include="Views\Posts\Upload.cshtml" />
+    <Content Include="Views\Social\Unblock.cshtml" />
+    <Content Include="Views\Social\MyFollowers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

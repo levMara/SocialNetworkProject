@@ -69,11 +69,6 @@ namespace WebApplication4.BL
         }
     }
 
-    public class UserIdAndName
-    {
-        public string UserId { get; set; }
-        public string UserFullName { get; set; }
-    }
 
     public class GetUserIdsAndNamesResult : ResultBase
     {

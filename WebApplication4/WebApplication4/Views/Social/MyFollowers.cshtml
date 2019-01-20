@@ -1,0 +1,37 @@
+﻿@using WebApplication4.Models;
+@model BlockedUsersViewModel
+@{
+    ViewBag.Title = "Blocked Users";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<hr />
+<div>
+    @if (Model.Users != null)
+    {
+        <h4>Manage your blocklist</h4>
+        using (Html.BeginForm("Unblock", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <table>
+                @foreach (UserIdAndName user in Model.Users)
+                {
+                    @Html.HiddenFor(m => m.UnblockUserId, new { id = "UnblockUserId" })
+                    <tr>
+                        <td>user.FullName</td>
+                        <td>
+                            <input type="submit" value="Unblock" onclick="document.getElementById('UnblockUserId').value=@user.UserId;" />
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    }
+    else
+    {
+        <h4> You don't have any blocked users</h4>
+    }
+
+
+</div>
