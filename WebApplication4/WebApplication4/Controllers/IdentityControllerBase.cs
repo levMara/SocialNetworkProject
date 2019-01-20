@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication4.BL;
+using WebApplication4.Models;
 
 namespace WebApplication4.Controllers
 {
     public abstract class ControllerBase : Controller
     {
         private const string usertoken_sessionkey = "usertoken";
-        private const string displayusername_sessionkey = "username";
+        private const string displayuser_sessionkey = "displayuser";
 
         protected string UserToken
         {
@@ -30,21 +31,21 @@ namespace WebApplication4.Controllers
                     Session[usertoken_sessionkey] = value;
             }
         }
-        protected string DisplayUserName
+        protected FullUser DisplayUserInfo
         {
             get
             {
-                if (Session[displayusername_sessionkey] != null && Session[displayusername_sessionkey].GetType() == typeof(string))
-                    return (string)Session[displayusername_sessionkey];
+                if (Session[displayuser_sessionkey] != null && Session[displayuser_sessionkey].GetType() == typeof(string))
+                    return (FullUser)Session[displayuser_sessionkey];
                 else
                     return null;
             }
             set
             {
                 if (value == null)
-                    Session.Remove(displayusername_sessionkey);
+                    Session.Remove(displayuser_sessionkey);
                 else
-                    Session[displayusername_sessionkey] = value;
+                    Session[displayuser_sessionkey] = value;
             }
         }
 

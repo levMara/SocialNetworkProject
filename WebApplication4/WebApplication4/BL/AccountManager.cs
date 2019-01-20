@@ -69,6 +69,24 @@ namespace WebApplication4.BL
         }
     }
 
+    public class UserIdAndName
+    {
+        public string UserId { get; set; }
+        public string UserFullName { get; set; }
+    }
+
+    public class GetUserIdsAndNamesResult : ResultBase
+    {
+        public IEnumerable<UserIdAndName> UserIdsAndNames { get; set; }
+
+        public GetUserIdsAndNamesResult() { }
+        public GetUserIdsAndNamesResult(bool success, IEnumerable<UserIdAndName> userIdsAndNames, string userErrorMessage = null) : base(success, userErrorMessage)
+        {
+            UserIdsAndNames = userIdsAndNames;
+        }
+
+    }
+
     #endregion
 
     public class AccountManager
@@ -77,13 +95,27 @@ namespace WebApplication4.BL
         private static WebAPIAccess identityServiceAccess = new WebAPIAccess("http://localhost:63485/api/");//TODO
 
 
+        #region Helpers
+
+
+
         private class BadRequestResultObject
         {
             public string Message { get; set; }
         }
 
-        #region Helpers
-
+        private static async Task<string> getBadRequestMessage(HttpResponseMessage httpResponseMessage, string defaultUserErrorMessage) 
+        {
+            string result = defaultUserErrorMessage;
+            if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var badRequestResultContent = await httpResponseMessage.Content.ReadAsStringAsync();
+                BadRequestResultObject badRequestResultObject =
+                Json.Decode<BadRequestResultObject>(badRequestResultContent);
+                result = badRequestResultObject.Message;
+            }
+            return result;
+        }
         //recieves HttpResponseMessage,  returns a ResultBase with message as in httpResponseMessage or defaultUserErrorMessage
         //depending on if status code is BadRequest or not, respectively.
         //and then casts the result to a ResultModel
@@ -147,6 +179,7 @@ namespace WebApplication4.BL
 
 
         }
+
 
         internal static async Task<ChangeUserDetailsResult> SetUserDetailsIfNotExistsAsync(string userToken, FullUser userDetails)
         {
@@ -221,6 +254,15 @@ namespace WebApplication4.BL
                 return newTokenResult.Item2;
             return null;
 
+        }
+
+        internal static async Task<GetUserIdsAndNamesResult> GetUserIdsAndNames()
+        {
+            var result = await identityServiceAccess.GetData<IEnumerable<UserIdAndName>>($"identity/GetUserIdsAndNames");
+            if (result.Item1.IsSuccessStatusCode)
+                return new GetUserIdsAndNamesResult(true, result.Item2,null);
+            else
+                return (await (ReturnErrorResult<GetUserIdsAndNamesResult>(result.Item1, "failed to get user ids and names")));
         }
     }
 

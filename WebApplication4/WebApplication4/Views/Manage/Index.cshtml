@@ -9,16 +9,34 @@
     <h4>Change your account settings</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>Blocked Users:</dt>
+        <dd>
+            [
+            @Html.ActionLink("Manage your blocklist", "ChangePassword")
+            ]
+        </dd>        
         <dt>Password:</dt>
         <dd>
             [
             @Html.ActionLink("Change your password", "ChangePassword")
             ]
-        </dd>        
+        </dd>
         <dt>Details:</dt>
         <dd>
             [
-                @Html.ActionLink("Change your details", "ChangeDetails")
+            @Html.ActionLink("Change your details", "ChangeDetails")
+            ]
+        </dd>
+        <dt>My Follows:</dt>
+        <dd>
+            [
+            @Html.ActionLink("Manage your follows", "MyFollows")
+            ]
+        </dd>
+        <dt>My Followers:</dt>
+        <dd>
+            [
+            @Html.ActionLink("See your followers", "MyFollowers")
             ]
         </dd>
     </dl>

@@ -16,5 +16,7 @@ namespace WebApplication4.Models
         [DataType(DataType.MultilineText)]
         [Display(Name = "Upload an Image")]
         public HttpPostedFileBase ImageFile { get; set; }
+
+        public string JsonMentions { get; set; }
     }
 }

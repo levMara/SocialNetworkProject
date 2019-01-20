@@ -1,28 +1,40 @@
-﻿@{
+﻿@using WebApplication4.Models;
+@{
     ViewBag.Title = "Home Page";
 }
 
-@if (Session["username"] != null && Session["username"].GetType() == typeof(string))
+@if (Session["displayuser"] != null && Session["displayuser"].GetType() == typeof(FullUser))
 {
 
-    
-
-
     <div class="row">
-        <div class="col-md-2">
-            <h4>User Info</h4>
-        </div>
-        <div class="col-md-8">
-            <h2>Posts</h2>
-            @Html.Partial("_UploadPostPartial")
-            
+        <div class="col-md-3">
+            @{ var user = (FullUser)Session["displayuser"];
+                <div class="row">
+                    <h4>@user.FullName</h4>
+                    </div>
+                    var age = DateTime.UtcNow.Year - user.BirthDate.Year;
+                    <div class="row">
+                        <label class="control-label">@age Years Old</label>
+                    </div>
+                    <div class="row">
+                        <label class="control-label">@user.City</label>
+                    </div>
+                    <div class="row">
+                        <label class="control-label">@(user.WorkPlace != null ? ("Works at " + user.WorkPlace) : "")</label>
+                    </div>
+                    }
+                </div>
+            <div class="col-md-6">
+                <h2>Posts</h2>
+
+                @Html.ActionLink("Upload a Post", "Upload", "Posts", null, new { @class = "btn btn-default" })
 
 
+            </div>
+            <div class="col-md-1">
+                <h4>Notifications</h4>
+            </div>
         </div>
-        <div class="col-md-1">
-            <h4>Notifications</h4>
-        </div>
-    </div>
 
 
 

@@ -2,7 +2,97 @@
 @{
     ViewBag.Title = "Upload";
 }
+<style>
+    .textarea {
+        -moz-appearance: textfield-multiline;
+        -webkit-appearance: textarea;
+        border: 1px solid gray;
+        font: medium -moz-fixed;
+        font: -webkit-small-control;
+        height: 200px;
+        overflow: auto;
+        padding: 2px;
+        resize: both;
+        width: 300px;
+    }
 
+    #select-user{
+        display:none
+    }
+
+</style>
+<script>
+    
+
+    function insertNodeAtCursor(node) {
+        var sel, range, html;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.insertNode(node);
+                sel.removeAllRanges();
+            }
+        }
+    }
+
+    function SelectUserList_change() {
+        
+        var SelectUserList = document.getElementById("SelectUserList")
+        var selectedValue = SelectUserList.value;
+        var selectedText = SelectUserList.options[SelectUserList.selectedIndex].text;
+        var viewTextNode = document.createElement("image");
+        viewTextNode.setAttribute("class", "mention");
+        viewTextNode.setAttribute("src", selectedText);
+        viewTextNode.setAttribute("alt", selectedText);
+        viewTextNode.setAttribute("user-id", selectedValue);
+
+        var mainDiv = document.getElementById("PostContentDiv");
+        mainDiv.focus();
+        insertNodeAtCursor(viewTextNode);
+
+        document.getElementById("select-user").style.display = "none";
+    }
+
+    function postcontent_onkeypress(e) {
+        if (e.key == '@@') {
+            document.getElementById("select-user").style.display = "block";
+        }
+    }
+
+    function onSubmit() {
+        var elements = document.getElementsByClassName("mention");
+        var jsonMentions = document.getElementById("JsonMentions");
+        var mainDiv = document.getElementById("PostContentDiv");
+
+        var arrMentions=[];
+        for (var i = 0; i < elements.length; i++) {
+            arrMentions.push(elements[i].getAttribute("user-id"));
+        }
+        console.log(jsonMentions);
+        jsonMentions.value = JSON.stringify(arrMentions);
+
+        while (mainDiv.getElementsByClassName("mention").length>0) {
+            var children = mainDiv.getElementsByClassName("mention");
+
+            console.log(mainDiv.innerHTML);
+            for (var i = 0; i < children.length; i++) {
+                var oldChild = children[i];
+                var newChild = document.createElement("span");
+
+                newChild.innerText = oldChild.getAttribute("src");
+                children[i].parentNode.replaceChild(newChild, oldChild)
+            }
+        }
+        document.getElementById("PostContent").value = mainDiv.innerText;
+        console.log(mainDiv.innerHTML);
+
+    }
+
+
+
+
+</script>
 <h2>Upload</h2>
 
 @using (Html.BeginForm("Upload", "Posts", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
@@ -10,10 +100,12 @@
     @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="form-group">
         @Html.LabelFor(m => m.PostContent, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextAreaFor(m => m.PostContent, new { required = true, rows = 10, @class = "form-control" })
+       <div id="PostContentDiv" onkeypress="postcontent_onkeypress(event)" class="textarea col-md-10" contenteditable="true">
+            @*Html(m => m.PostContent, new { required = true, rows = 10, @class = "form-control", onkeypress = "postcontent_onkeypress(event)" })*@
         </div>
+        @Html.HiddenFor(m => m.PostContent, new { id = "PostContent" })
     </div>
+
     <div class="form-group">
         @Html.LabelFor(m => m.ImageFile, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -21,9 +113,22 @@
         </div>
     </div>
 
+    @Html.HiddenFor(m => m.JsonMentions, new { id = "JsonMentions" })
+
+    <div class="form-group" id="select-user">
+        <label for="SelectUser" class="col-md-2 control-label">Select a user</label>
+        <select id="SelectUserList" onchange="javascript: SelectUserList_change();" class="form-control">
+            @foreach (var item in ViewBag.Mentions)
+            {
+            <option value=@item.UserId>@item.UserFullName</option>
+            }
+        </select>
+    </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Upload" />
+            <input type="submit" onclick="javascript: onSubmit();" class="btn btn-default" value="Upload" />
         </div>
     </div>
+
 }
+

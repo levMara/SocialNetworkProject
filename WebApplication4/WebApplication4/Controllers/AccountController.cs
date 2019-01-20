@@ -48,7 +48,8 @@ namespace WebApplication4.Controllers
                 if (result.Success)
                 {
                     UserToken = result.Token;
-                    DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
+                    var user = (await AccountManager.GetUserInfoAsync(result.Token));
+                    DisplayUserInfo = user;
                     return RedirectToLocal(returnUrl);
                 }
                 else
@@ -75,7 +76,7 @@ namespace WebApplication4.Controllers
             if (result.Success)
             {
                 UserToken = result.Token;
-                DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
+                DisplayUserInfo = (await AccountManager.GetUserInfoAsync(result.Token));
 
                 return true;
             }
@@ -105,7 +106,7 @@ namespace WebApplication4.Controllers
             if (result.Success)
             {
                 UserToken = result.Token;
-                DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
+                DisplayUserInfo = (await AccountManager.GetUserInfoAsync(result.Token));
 
                 return RedirectToAction("Index", "Home");
             }
@@ -128,7 +129,7 @@ namespace WebApplication4.Controllers
         {
             // _accountManager.SignOut();
             UserToken = null;
-            DisplayUserName = null;
+            DisplayUserInfo = null;
 
             return RedirectToAction("Index", "Home");
         }

@@ -107,6 +107,24 @@ namespace Identity.Controllers
         }
 
 
+        [System.Web.Mvc.OutputCache(Duration = 15*60)]//cache return value for 15 minutes
+        public IHttpActionResult GetUserIdsAndNames()
+        {
+            try
+            {
+                return Ok(_identityMng.GetUserIdsAndNames());
+            }
+            catch(IdentityException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError,ex.Message);
+            }
+        }
+
+
         private async Task<string> VerifyEndDecrypt(string token)
         {
             using (HttpClient client = new HttpClient())

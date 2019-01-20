@@ -31,6 +31,11 @@ namespace IetntityBL.Manageres
             return user;
         }
 
+        public IEnumerable<UserIdAndName> GetUserIdsAndNames()
+        {
+            return _fullUserService.GetUserIdsAndNames();
+        }
+
         public void RegisterOrUpdate(string userId, FullUser user)
         {
             if (string.IsNullOrEmpty(userId) || user == null)

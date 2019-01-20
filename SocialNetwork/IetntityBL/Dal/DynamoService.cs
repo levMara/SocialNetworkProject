@@ -33,6 +33,14 @@ namespace IdentityBL
             }
         }
 
+        public IEnumerable<T> Scan<T>() where T : class
+        {
+            using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
+            {
+                return context.Scan<T>();
+            }
+        }
+
         public T Get<T>(string key) where T : class
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))

@@ -55,7 +55,7 @@ namespace WebApplication4.Controllers
             await RefreshToken();
             if (userModel != null)
             {
-                return View(new ChangeDetailsViewModel { FullName = userModel.FullName, BirthDate = userModel.BirthDate, City = `.City, WorkPlace = userModel.WorkPlace });
+                return View(new ChangeDetailsViewModel { FullName = userModel.FullName, BirthDate = userModel.BirthDate, City = userModel.City, WorkPlace = userModel.WorkPlace });
             }
             else
                 return View();
@@ -71,11 +71,12 @@ namespace WebApplication4.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await AccountManager.ChangeUserDetailsAsync(UserToken, new FullUser(model.FullName, model.BirthDate, model.City, model.WorkPlace));
+            FullUser user = new FullUser(model.FullName, model.BirthDate, model.City, model.WorkPlace);
+            var result = await AccountManager.ChangeUserDetailsAsync(UserToken,user);
 
             if (result.Success)
             {
-                DisplayUserName = model.FullName;
+                DisplayUserInfo = user;
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeDetailsSuccess });
             }
             else
