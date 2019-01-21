@@ -1,35 +1,41 @@
 ﻿@using WebApplication4.Models;
 @model BlockedUsersViewModel
 @{
-    ViewBag.Title = "Blocked Users";
+    ViewBag.Title = "Blocked users";
 }
 
 <h2>@ViewBag.Title.</h2>
 
 <p class="text-success">@ViewBag.StatusMessage</p>
 <hr />
+@Html.ValidationSummary("", new { @class = "text-danger" })
+
 <div>
-    @if (Model.Users != null)
+@if (Model != null)
+{
+    if (Model.Users != null)
     {
-        <h4>Manage your blocklist</h4>
-        using (Html.BeginForm("Unblock", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        <h4>Manage your block list</h4>
+        using (Html.BeginForm("BlockedUsers", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             <table>
                 @foreach (UserIdAndName user in Model.Users)
                 {
                     @Html.HiddenFor(m => m.UnblockUserId, new { id = "UnblockUserId" })
                     <tr>
-                        <td>user.FullName</td>
+                        <td>@user.UserFullName</td>
                         <td>
-                            <input type="submit" value="Unblock" onclick="document.getElementById('UnblockUserId').value=@user.UserId;"/>
+                            <input type="submit" value="Unblock" class="btn btn-default" onclick="document.getElementById('UnblockUserId').value=@user.UserId;"/>
                         </td>
                     </tr>
                 }
             </table>
         }
-    }else{
+    }
+    else
+    {
         <h4> You don't have any blocked users</h4>
     }
-
+}
 
 </div>

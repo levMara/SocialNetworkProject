@@ -23,7 +23,7 @@ namespace WebApplication4.BL
 
         public AmazonBucketClient()
         {
-            s3Client = new AmazonS3Client(RegionEndpoint.USEast2);
+            s3Client = new AmazonS3Client(bucketRegion);
         }
 
         public string UploadFile(byte[] data, string FileKey)

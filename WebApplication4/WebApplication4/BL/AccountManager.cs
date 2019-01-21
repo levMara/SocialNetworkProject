@@ -10,23 +10,13 @@ using WebApplication4.Models;
 using System.Net.Http;
 using System.Web.Helpers;
 using System.Web.Script.Serialization;
+using WebApplication4.BL;
+using static WebApplication4.BL.ManagerBase;
 
 namespace WebApplication4.BL
 {
 
     #region Result Models
-    public class ResultBase
-    {
-        public bool Success { get; set; }
-        public string UserErrorMessage { get; set; }
-
-        public ResultBase() { }
-        public ResultBase(bool success, string userErrorMessage)
-        {
-            this.Success = success;
-            this.UserErrorMessage = userErrorMessage;
-        }
-    }
 
     public class SignInResult : ResultBase
     {
@@ -54,7 +44,7 @@ namespace WebApplication4.BL
     {
         public string Token { get; set; }
         public ChangePasswordResult() { }
-        public ChangePasswordResult(bool success,string token, string userErrorMessage = null) : base(success, userErrorMessage)
+        public ChangePasswordResult(bool success, string token, string userErrorMessage = null) : base(success, userErrorMessage)
         {
             Token = token;
         }
@@ -84,51 +74,12 @@ namespace WebApplication4.BL
 
     #endregion
 
-    public class AccountManager
+    public class AccountManager : ManagerBase
     {
         private static WebAPIAccess authServiceAccess = new WebAPIAccess("http://localhost:49922/api/");//TODO
         private static WebAPIAccess identityServiceAccess = new WebAPIAccess("http://localhost:63485/api/");//TODO
 
 
-        #region Helpers
-
-
-
-        private class BadRequestResultObject
-        {
-            public string Message { get; set; }
-        }
-
-        private static async Task<string> getBadRequestMessage(HttpResponseMessage httpResponseMessage, string defaultUserErrorMessage) 
-        {
-            string result = defaultUserErrorMessage;
-            if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                var badRequestResultContent = await httpResponseMessage.Content.ReadAsStringAsync();
-                BadRequestResultObject badRequestResultObject =
-                Json.Decode<BadRequestResultObject>(badRequestResultContent);
-                result = badRequestResultObject.Message;
-            }
-            return result;
-        }
-        //recieves HttpResponseMessage,  returns a ResultBase with message as in httpResponseMessage or defaultUserErrorMessage
-        //depending on if status code is BadRequest or not, respectively.
-        //and then casts the result to a ResultModel
-        private static async Task<ResultModel> ReturnErrorResult<ResultModel>(HttpResponseMessage httpResponseMessage, string defaultUserErrorMessage) where ResultModel : ResultBase, new()
-        {
-            ResultModel result = new ResultModel { Success= false, UserErrorMessage = defaultUserErrorMessage};
-
-            if (httpResponseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                var badRequestResultContent = await httpResponseMessage.Content.ReadAsStringAsync();
-                BadRequestResultObject badRequestResultObject=
-                Json.Decode<BadRequestResultObject>(badRequestResultContent);
-                result.UserErrorMessage = badRequestResultObject.Message;
-            }
-            return result;
-        }
-        #endregion
-        
         internal static async Task<SignInResult> PasswordSignInAsync(string username, string password)
         {
 
@@ -154,7 +105,7 @@ namespace WebApplication4.BL
                 return new RegisterResult(changeDetailsResult.Success, userToken, changeDetailsResult.UserErrorMessage);
             }
             else
-                return (await (ReturnErrorResult< RegisterResult>(registerResult.Item1, "failed to register")));
+                return (await (ReturnErrorResult<RegisterResult>(registerResult.Item1, "failed to register")));
 
         }
 
@@ -178,7 +129,7 @@ namespace WebApplication4.BL
 
         internal static async Task<ChangeUserDetailsResult> SetUserDetailsIfNotExistsAsync(string userToken, FullUser userDetails)
         {
-            
+
             var changeDetailsResult = await identityServiceAccess.PostData<FullUser>($"identity/SetUserDetailsIfNotExists?token={userToken}", userDetails);//TODO check
 
             if (changeDetailsResult.IsSuccessStatusCode)
@@ -191,7 +142,7 @@ namespace WebApplication4.BL
 
         internal static async Task<SignInResult> FacebookLoginAsync(string facebookAccessToken, FullUser userDetails)
         {
-            
+
             var facebookLoginResult = await authServiceAccess.GetData<string>($"facebooklogin/login?facebookToken={facebookAccessToken}");//TODO check
             if (facebookLoginResult.Item1.IsSuccessStatusCode)
             {
@@ -200,9 +151,9 @@ namespace WebApplication4.BL
 
                 //if (!userExisted)
                 //{
-                    var changeDetailsResult = await SetUserDetailsIfNotExistsAsync(userToken, userDetails);
-                    return new SignInResult(changeDetailsResult.Success, userToken, changeDetailsResult.UserErrorMessage);
-                    //throw new NotImplementedException();
+                var changeDetailsResult = await SetUserDetailsIfNotExistsAsync(userToken, userDetails);
+                return new SignInResult(changeDetailsResult.Success, userToken, changeDetailsResult.UserErrorMessage);
+                //throw new NotImplementedException();
                 //}
                 //return new SignInResult(true, userToken);
 
@@ -216,11 +167,11 @@ namespace WebApplication4.BL
             var result = await authServiceAccess.GetData<string>($"login/changepassword?token={userToken}&oldpassword={oldPassword}&newpassword={newPassword}");//TODO change
             if (result.Item1.IsSuccessStatusCode)
             {
-                return new ChangePasswordResult(true,result.Item2);
+                return new ChangePasswordResult(true, result.Item2);
             }
             else
                 return (await (ReturnErrorResult<ChangePasswordResult>(result.Item1, "failed to change password")));
-            
+
         }
 
         public static async Task<FullUser> GetUserInfoAsync(string userToken)
@@ -255,7 +206,7 @@ namespace WebApplication4.BL
         {
             var result = await identityServiceAccess.GetData<IEnumerable<UserIdAndName>>($"identity/GetUserIdsAndNames");
             if (result.Item1.IsSuccessStatusCode)
-                return new GetUserIdsAndNamesResult(true, result.Item2,null);
+                return new GetUserIdsAndNamesResult(true, result.Item2, null);
             else
                 return (await (ReturnErrorResult<GetUserIdsAndNamesResult>(result.Item1, "failed to get user ids and names")));
         }

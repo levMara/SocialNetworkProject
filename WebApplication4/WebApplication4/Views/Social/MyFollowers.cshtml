@@ -1,27 +1,63 @@
 ﻿@using WebApplication4.Models;
-@model BlockedUsersViewModel
+@model MyFollowersViewModel
 @{
-    ViewBag.Title = "Blocked Users";
+    ViewBag.Title = "My Followers";
 }
+
+<script>
+    function unfollow_click(userId) {
+        document.getElementById('UnfollowUserId').value =userId;
+        document.getElementById('FollowingAction').value = @((int)MyFollowersAction.Unfollow);
+    }
+    function followBack_click(userId) {
+        document.getElementById('FollowBackUserId').value = userId;
+        document.getElementById('FollowingAction').value =@((int)MyFollowersAction.FollowBack);
+    }
+    function block_click(userId) {
+        document.getElementById('BlockUserId').value = userId;
+        document.getElementById('FollowingAction').value =@((int)MyFollowersAction.Block);
+    }
+</script>
 
 <h2>@ViewBag.Title.</h2>
 
 <p class="text-success">@ViewBag.StatusMessage</p>
 <hr />
+@Html.ValidationSummary("", new { @class = "text-danger" })
+
 <div>
-    @if (Model.Users != null)
+@if (Model != null)
+{
+    if (Model.Followers != null)
     {
-        <h4>Manage your blocklist</h4>
-        using (Html.BeginForm("Unblock", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        <h4>Manage your followers</h4>
+        using (Html.BeginForm("MyFollowers", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             <table>
-                @foreach (UserIdAndName user in Model.Users)
+                @foreach (FollowerModel user in Model.Followers)
                 {
-                    @Html.HiddenFor(m => m.UnblockUserId, new { id = "UnblockUserId" })
+                    @Html.HiddenFor(m => m.FollowingAction, new { id = "FollowingAction" })
+                    @Html.HiddenFor(m => m.FollowBackUserId, new { id = "FollowBackUserId" })
+                    @Html.HiddenFor(m => m.UnfollowUserId, new { id = "UnfollowUserId" })
+                    @Html.HiddenFor(m => m.BlockUserId, new { id = "BlockUserId" })
                     <tr>
-                        <td>user.FullName</td>
+                        <td>@user.UserFullName</td>
+                        <td></td>
+                        @if (user.Followed)
+                        {
+                            <td>
+                                <input type="submit" class="btn btn-default" value="Unfollow" onclick="javascipt: unfollow_click(@user.UserId);" />
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <input type="submit" class="btn btn-default" value="Follow Back" onclick="javascipt: followBack_click(@user.UserId);" />
+                            </td>
+                        }
+
                         <td>
-                            <input type="submit" value="Unblock" onclick="document.getElementById('UnblockUserId').value=@user.UserId;" />
+                            <input type="submit"  class="btn btn-default" value="Block" onclick="javascript: block_click(@user.UserId);" />
                         </td>
                     </tr>
                 }
@@ -32,6 +68,7 @@
     {
         <h4> You don't have any blocked users</h4>
     }
+}
 
 
 </div>

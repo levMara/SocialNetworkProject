@@ -44,8 +44,4 @@ namespace WebApplication4.Models
         public string WorkPlace { get; set; }
     }
 
-    public class BlockedUsersViewModel{
-        public int UnblockUserId;
-        public IEnumerable<UserIdAndName> Users;
-    }
 }

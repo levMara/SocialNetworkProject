@@ -1,4 +1,5 @@
 ﻿@using WebApplication4.Models;
+@model IEnumerable<PostModel>
 @{
     ViewBag.Title = "Home Page";
 }
@@ -22,15 +23,13 @@
                     <div class="row">
                         <label class="control-label">@(user.WorkPlace != null ? ("Works at " + user.WorkPlace) : "")</label>
                     </div>
-                    }
+                    
                 </div>
+            
             <div class="col-md-6">
-                <h2>Posts</h2>
-
-                @Html.ActionLink("Upload a Post", "Upload", "Posts", null, new { @class = "btn btn-default" })
-
-
+                @Html.Partial("_PostsPartial",Model)
             </div>
+            }
             <div class="col-md-1">
                 <h4>Notifications</h4>
             </div>

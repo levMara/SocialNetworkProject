@@ -12,6 +12,13 @@ namespace WebApplication4.Models
 
     public class UserIdAndName
     {
+        public UserIdAndName() { }
+        public UserIdAndName(string userId, string userFullName)
+        {
+            UserId = userId;
+            UserFullName = userFullName;
+        }
+
         public string UserId { get; set; }
         public string UserFullName { get; set; }
     }

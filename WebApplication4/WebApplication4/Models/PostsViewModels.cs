@@ -18,5 +18,25 @@ namespace WebApplication4.Models
         public HttpPostedFileBase ImageFile { get; set; }
 
         public string JsonMentions { get; set; }
+
+        public PostPermission postPermission;
     }
+
+    public enum PostPermission
+    {
+        All,
+        followers
+    }
+
+    public class PostModel
+    {
+        public string Id { get; set; }
+        public ICollection<string> Mentions { get; set; }
+        public string Content { get; set; }
+        public DateTime Date { get; set; }
+        public string ImageUrl { get; set; }
+        public int Likes { get; set; }
+        public PostPermission postPermission;
+    }
+
 }
