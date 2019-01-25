@@ -23,10 +23,15 @@ namespace BL.Services
             if (tmp == null)
                 throw new IncorrectDetailsException("Incorrect user name or pass");
             
-            if (tmp.Password!= pass)
+            if (tmp.Password != pass)
                 throw new IncorrectDetailsException("Incorrect user name or pass");
 
             return tmp;
-        }   
+        }
+        
+      
+
+
+      
     }
 }

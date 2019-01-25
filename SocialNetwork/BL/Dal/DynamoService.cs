@@ -85,20 +85,7 @@ namespace Authetication.Db
 
         }
 
-        public void DeleteU(string item, string a)
-        {
-            using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
-            {
-                var savedItem = context.Load(item);
-
-                if (savedItem == null)
-                {
-                    throw new EntityNotExistsException("The item does not exist in the Table");
-                }
-                context.Delete(item);
-            }
-
-        }
+      
 
 
 

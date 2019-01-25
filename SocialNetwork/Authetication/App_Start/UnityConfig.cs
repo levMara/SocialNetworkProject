@@ -46,9 +46,10 @@ namespace Authetication
             // container.RegisterType<IProductRepository, ProductRepository>();
             container.RegisterType<ILogin, UserManager>();
             container.RegisterType<IUserMng, UserManager>();
-            container.RegisterType<IRegister, RegisterService>();
+            container.RegisterType<IUserNameCheck, RegisterService>();
             container.RegisterType<ITokenMng, TokenManager>();
             container.RegisterType<IToken, TokenManager>();
+            container.RegisterType<IPassCheck, RegisterService>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using IdentityBL.Models;
+using IetntityBL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,12 @@ namespace IetntityBL.Interfaces
     {
         FullUser Get(string userId);
 
-        void RegisterOrUpdate(string userId ,FullUser user);
+        FullUser Register(string userId ,FullUser user);
+
+        FullUser Update(string userId, FullUser updateUser);
+
+        void RegisterOrUpdate(string userId, FullUser user);
+
+        IEnumerable<UserIdAndName> GetUserIdsAndNames();
     }
 }

@@ -67,28 +67,30 @@
     <Compile Include="Exceptiones\UserException.cs" />
     <Compile Include="Dal\DynamoService.cs" />
     <Compile Include="Dal\UserService.cs" />
-    <Compile Include="EmailValidation.cs" />
     <Compile Include="Exceptiones\DetailsNotValidException.cs" />
     <Compile Include="Exceptiones\EntityNotExistsException.cs" />
     <Compile Include="Exceptiones\IncorrectDetailsException.cs" />
     <Compile Include="Interfaces\ILogin.cs" />
-    <Compile Include="Interfaces\IRegister.cs" />
+    <Compile Include="Interfaces\IPassCheck.cs" />
+    <Compile Include="Interfaces\IUserNameCheck.cs" />
+    <Compile Include="Interfaces\ISetting.cs" />
     <Compile Include="Interfaces\IToken.cs" />
     <Compile Include="Interfaces\ITokenMng.cs" />
     <Compile Include="Interfaces\IUserMng.cs" />
+    <Compile Include="Manageres\FacebookManager.cs" />
     <Compile Include="Manageres\FacebookTokenManager.cs" />
-    <Compile Include="Manageres\FacebookUserManager.cs" />
+    <Compile Include="Manageres\SettingManager.cs" />
     <Compile Include="Manageres\TokenManager.cs" />
     <Compile Include="Dal\TokenService.cs" />
     <Compile Include="Manageres\UserManager.cs" />
+    <Compile Include="Models\FacebookUser.cs" />
+    <Compile Include="Services\ApiAccess.cs" />
     <Compile Include="Services\CheckLogin.cs" />
     <Compile Include="Services\RegisterService.cs" />
     <Compile Include="Models\State.cs" />
     <Compile Include="Models\Token.cs" />
-    <Compile Include="NewUserValidation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="UserNameValidation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

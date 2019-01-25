@@ -25,6 +25,14 @@ namespace IdentityBL
             };
         }
 
+        public void Add<T>(T item) where T : new()
+        {
+            using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
+            {
+                context.Save(item);
+            }
+        }
+
         public void AddOrUpdate<T>(T item) where T : new()
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
@@ -49,7 +57,7 @@ namespace IdentityBL
                 return t;
             }
         }
-        
+
         public T Update<T>(string key, T item) where T : class
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
@@ -82,28 +90,13 @@ namespace IdentityBL
 
         }
 
-        public void DeleteU(string item, string a)
+        public IEnumerable<T> Scan<T>() where T : class
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
             {
-                var savedItem = context.Load(item);
-
-                if (savedItem == null)
-                {
-                    throw new IdentityException("The item does not exist in the Table");
-                }
-                context.Delete(item);
+                return context.Scan<T>();
             }
-
         }
-
-
-
-
-
-
-
-
 
     }
 

@@ -9,9 +9,10 @@ namespace BL.Interfaces
 {
     public interface IUserMng
     {
-        string Add(string userName, string pass);
+        Task<string> Add(string userName, string pass);
 
         User Get(string userName);
-        string ChangePassword(string token, string oldpassword, string newPassword);
+
+        string ChangePassword(string token, string oldPassword, string newPassowrd);
     }
 }

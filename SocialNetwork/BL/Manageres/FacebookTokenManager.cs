@@ -1,6 +1,7 @@
 ﻿using Authetication.Db;
 using Authetication.Models;
 using BL.Interfaces;
+using BL.Models;
 using Jose;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BL.Manageres
 {
-    public class FacebookTokenManager : /*ITokenMng,*/ IToken//TODO use interface
+    public class FacebookTokenManager/* : ITokenMng, IToken*///TODO use interface
     {
         private readonly TokenService _TokenService;
         private readonly string _secretKey = "G0xanO_eGRj8mS8xRVAPb3TXAWLP416mrn1XOiqwvcnFZV4AUd97F978NoDsFKYthzRsKsM3dILakTJRlUC9336wOe-x2xotyDyerEMdSIUmoWxXyjbxTCCZ-pEqaM3CH32Q7G6k_Ys_SVgrHDGAO5ueTIJ2lko9rYBnnF6lYnlEONVk-7dzFrVCRRZMrI-iM4-EH_gbdxP93S-xf_6-R5iuS8lzoBwljPcEv90iQ5PLKQ9OXU1I1RLjOAXQKKzCY1oQKkti9NMyGyfk0Sci56D5HnCo-Mk91AbzbuHIZx9Ng97buh7vaGT6FQZg1KfzYzB9Vg4uDtpHRXYLbnx9yQ";
@@ -34,6 +35,7 @@ namespace BL.Manageres
             };
 
             Save(tmp);
+            //add to neo4j
             return tmp.token;
         }
 

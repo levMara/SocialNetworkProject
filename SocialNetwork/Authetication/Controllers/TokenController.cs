@@ -23,11 +23,9 @@ namespace Authetication.Controllers
         [Route("Verify")]
         public IHttpActionResult Verify(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
+            if (string.IsNullOrEmpty(token))           
                 return BadRequest("Empty token");
-            }
-            
+        
             try
             {
                 bool isValid = _tokenCheck.Verify(token);
@@ -39,6 +37,28 @@ namespace Authetication.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("DecodeUserId")]
+        public IHttpActionResult DecodeUserId(string token)
+        {
+            if (string.IsNullOrEmpty(token))          
+                return BadRequest("Empty token");            
+
+            try
+            {
+                string userId = _tokenCheck.DecodeUserId(token);
+                if (string.IsNullOrEmpty(userId))
+                    return BadRequest("Error, faild get user id");
+                return Ok(userId); 
+            }
+
+            catch (Exception e)
+            {
+                return Content(HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
+        //saed
         [HttpGet]
         [Route("Refresh")]
         public IHttpActionResult Refresh(string token)
@@ -61,26 +81,6 @@ namespace Authetication.Controllers
                 return Content(HttpStatusCode.BadRequest, e.Message);
             }
 
-        }
-        [HttpGet]
-        [Route("DecodeUserId")]
-        public IHttpActionResult DecodeUserId(string token)
-        {
-            if (string.IsNullOrEmpty(token))          
-                return BadRequest("Empty token");            
-
-            try
-            {
-                string userId = _tokenCheck.DecodeUserId(token);
-                if (string.IsNullOrEmpty(userId))
-                    return BadRequest("Error, faild get user id");
-                return Ok(userId); 
-            }
-
-            catch (Exception e)
-            {
-                return Content(HttpStatusCode.BadRequest, e.Message);
-            }
         }
     }
 }
