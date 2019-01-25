@@ -14,11 +14,29 @@
             [
             @Html.ActionLink("Change your password", "ChangePassword")
             ]
-        </dd>        
+        </dd>
         <dt>Details:</dt>
         <dd>
             [
-                @Html.ActionLink("Change your details", "ChangeDetails")
+            @Html.ActionLink("Change your details", "ChangeDetails")
+            ]
+        </dd>
+        <dt>Blocked Users:</dt>
+        <dd>
+            [
+            @Html.ActionLink("Manage your blocklist", "BlockedUsers", "Social")
+            ]
+        </dd>
+        <dt>My Follows:</dt>
+        <dd>
+            [
+            @Html.ActionLink("Manage your follows", "MyFollows", "Social")
+            ]
+        </dd>
+        <dt>My Followers:</dt>
+        <dd>
+            [
+            @Html.ActionLink("manage your followers", "MyFollowers", "Social")
             ]
         </dd>
     </dl>

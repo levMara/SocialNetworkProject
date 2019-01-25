@@ -8,7 +8,22 @@ using Microsoft.AspNet.Identity.EntityFramework;
 namespace WebApplication4.Models
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-    
+
+
+    public class UserIdAndName
+    {
+        public UserIdAndName() { }
+        public UserIdAndName(string id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public int FollowersCount { get; set; }
+    }
+
     public class FullUser
     {
 

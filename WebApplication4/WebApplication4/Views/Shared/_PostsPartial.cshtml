@@ -1,0 +1,103 @@
+﻿@using WebApplication4.Models
+@model IEnumerable<WebApplication4.Models.PostWithCommentsModel>
+
+<style>
+    .glyphicon {
+        font-size: 25px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .glyphicon-small {
+        font-size: 20px;
+    }
+
+    .glyphicon:hover {
+        color: gray
+    }
+</style>
+
+
+
+@*{var user = (FullUser)Session["displayuser"];}*@
+
+<script>
+    function like_post(postId) {
+        $.post("../Posts/Like?postid=" + postId, function (response) {
+            console.log(response);
+            
+            if (response.Success) {
+                document.getElementById("likes_post" + postId).innerText = response.NewLikesCount;
+            }
+        });
+    }
+    function like_comment(commentId) {
+        $.post("../Posts/LikeComment?commentid=" + commentId, function (response) {
+            console.log(response);
+            console.log(response.Success);
+            if (response.Success) {
+                document.getElementById("likes_comment" + commentId).innerText = response.NewLikesCount;
+            }
+        });
+    }
+
+
+</script>
+
+
+<hr />
+@foreach (var post in Model)
+{
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>@*post.UploaderFullName -*@ @post.Date</strong></div>
+            <div class="panel-body" style="word-wrap:break-word">@post.Content</div>
+            @if (post.ImageUrl != null)
+            {
+                <img src="@post.ImageUrl" class="img-responsive" />
+            }
+
+            <div class="panel-body">
+                @if (post.ImageUrl == null)
+                {<hr />}
+                <i onclick="javascript:like_post('@post.Id');" class="glyphicon glyphicon-thumbs-up"></i>
+                <span id="@("likes_post" + post.Id)">@post.Likes</span>
+
+                <a href="../Posts/UploadComment?postId=@post.Id">
+                    <i onclick="javascript: window.location.href = '../Posts/Comment?postid=@post.Id';" class="glyphicon glyphicon-comment" style="margin-left:10px"></i>
+                </a>
+            </div>
+        </div>
+
+        @if (post.Comments != null)
+        {
+            <div>
+                @foreach (var comment in post.Comments)
+                {
+                    <div class="panel panel-default" style="margin-left: 5%">
+                        <div class="panel-body col" style="word-wrap:break-word">
+                            @comment.Content
+                            <small style="color:gray; text-align:right"> (@*comment.UploaderFullName -*@ @comment.Date)</small>
+                        
+                        @if (comment.ImageUrl != null)
+                        {
+                            <img src="@comment.ImageUrl" class="img-responsive" />
+                        }
+
+                        
+                            @if (comment.ImageUrl == null)
+                            {<hr />}
+
+                            <i onclick="javascript:like_comment('@comment.Id');" class="glyphicon-small glyphicon glyphicon-thumbs-up"></i>
+
+                            <span id="@("likes_comment" + comment.Id)">@comment.Likes</span>
+                        </div>
+
+                    </div>
+
+                }
+            </div>
+
+        }
+    </div>
+}

@@ -1,0 +1,43 @@
+﻿@using WebApplication4.Models;
+@model MyFollowsViewModel
+@{
+    ViewBag.Title = "My Follows";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<hr />
+@Html.ValidationSummary("", new { @class = "text-danger" })
+
+<div>
+    @if (Model != null)
+    {
+        if (Model.Follows != null)
+        {
+            <h4>Manage users you follow</h4>
+            using (Html.BeginForm("MyFollows", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                <table>
+                    @foreach (UserIdAndName user in Model.Follows)
+                    {
+                        @Html.HiddenFor(m => m.UnfollowUserId, new { id = "UnfollowUserId" })
+                        <tr>
+                            <td>@user.Name</td>
+                            <td></td>
+                            <td>
+                                <input type="submit" value="Unfollow" class="btn btn-default" onclick="document.getElementById('UnfollowUserId').value='@user.Id';" />
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+        }
+        else
+        {
+            <h4> You don't have any follows yet</h4>
+        }
+    }
+
+
+</div>

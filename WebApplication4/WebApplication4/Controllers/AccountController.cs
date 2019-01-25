@@ -42,13 +42,12 @@ namespace WebApplication4.Controllers
         {
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, change to shouldLockout: true
                 var result = await AccountManager.PasswordSignInAsync(model.Username, model.Password);
                 if (result.Success)
                 {
                     UserToken = result.Token;
-                    DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
+                    var user = (await AccountManager.GetUserInfoAsync(result.Token));
+                    DisplayUserInfo = user;
                     return RedirectToLocal(returnUrl);
                 }
                 else
@@ -60,19 +59,25 @@ namespace WebApplication4.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult> FacebookLogin(FacebookLoginModel model)
+
+        public ActionResult FacebookLoginError()
         {
-            var result = await AccountManager.FacebookLogin(model.AccessToken, new FullUser(model.FullName, model.BirthDay, model.City, model.WorkPlace));
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<bool> FacebookLogin(FacebookLoginModel model)
+        {
+            var result = await AccountManager.FacebookLoginAsync(model.AccessToken, new FullUser(model.FullName, model.BirthDay, model.City, model.WorkPlace));
             if (result.Success)
             {
                 UserToken = result.Token;
-                DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
+                DisplayUserInfo = (await AccountManager.GetUserInfoAsync(result.Token));
 
-                return RedirectToAction("Index", "Home");
+                return true;
             }
             else
-                return View("FacebookLoginError"); 
+                return false;
         }
 
         //
@@ -97,7 +102,7 @@ namespace WebApplication4.Controllers
             if (result.Success)
             {
                 UserToken = result.Token;
-                DisplayUserName = (await AccountManager.GetUserInfoAsync(result.Token))?.FullName;
+                DisplayUserInfo = (await AccountManager.GetUserInfoAsync(result.Token));
 
                 return RedirectToAction("Index", "Home");
             }
@@ -107,9 +112,8 @@ namespace WebApplication4.Controllers
                 return View(model);
             }
 
-            // If we got this far, something failed, redisplay form
+            
         }
-
 
         
         //
@@ -120,7 +124,7 @@ namespace WebApplication4.Controllers
         {
             // _accountManager.SignOut();
             UserToken = null;
-            DisplayUserName = null;
+            DisplayUserInfo = null;
 
             return RedirectToAction("Index", "Home");
         }

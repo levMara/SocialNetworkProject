@@ -14,12 +14,6 @@ namespace WebApplication4.Controllers
 {
     public class ManageController : ControllerBase
     {
-        //private AccountManager _accountManager;
-
-        public ManageController()
-        {
-            //_accountManager = new AccountManager();
-        }
 
         //
         // GET: /Manage/Index
@@ -60,7 +54,9 @@ namespace WebApplication4.Controllers
             FullUser userModel = await AccountManager.GetUserInfoAsync(UserToken);
             await RefreshToken();
             if (userModel != null)
+            {
                 return View(new ChangeDetailsViewModel { FullName = userModel.FullName, BirthDate = userModel.BirthDate, City = userModel.City, WorkPlace = userModel.WorkPlace });
+            }
             else
                 return View();
 
@@ -75,10 +71,12 @@ namespace WebApplication4.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await AccountManager.ChangeUserDetails(UserToken, new FullUser(model.FullName, model.BirthDate, model.City, model.WorkPlace),false);
+            FullUser user = new FullUser(model.FullName, model.BirthDate, model.City, model.WorkPlace);
+            var result = await AccountManager.ChangeUserDetailsAsync(UserToken,user);
 
             if (result.Success)
             {
+                DisplayUserInfo = user;
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangeDetailsSuccess });
             }
             else
@@ -114,18 +112,6 @@ namespace WebApplication4.Controllers
         }
 
         #region Helpers
-        /*
-    // Used for XSRF protection when adding external logins
-    private const string XsrfKey = "XsrfId";
-
-    private IAuthenticationManager AuthenticationManager
-    {
-        get
-        {
-            return HttpContext.GetOwinContext().Authentication;
-        }
-    }
-    */
 
         public enum ManageMessageId
         {
