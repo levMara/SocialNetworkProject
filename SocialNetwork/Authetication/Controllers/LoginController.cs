@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Authetication.Controllers
@@ -53,22 +54,22 @@ namespace Authetication.Controllers
         }
 
         [HttpGet]
-        [Route("ChangePassword")]
-        public IHttpActionResult ChangePassword(string token, string oldpassword,string newPassword)
+        [Route("Register")]
+        public async Task<IHttpActionResult> Register(string userName, string pass)
         {
-            if (token == null || newPassword == null)
+            if (userName == null || pass == null)
             {
-                return BadRequest("user token or pass missing");
+                return BadRequest("usr name or pass missing");
             }
 
-            string newToken;
+            string token;
             try
             {
-                newToken = _userMng.ChangePassword(token, oldpassword,newPassword);
-                if (string.IsNullOrEmpty(newToken))
-                    return BadRequest("failed to change password");
+                token = await _userMng.Add(userName, pass);
+                if (string.IsNullOrEmpty(token))
+                    return BadRequest("Registration to database failed.");
                 
-                return Content(HttpStatusCode.OK, newToken);
+                return Content(HttpStatusCode.OK, token);
             }
 
             catch (UserException e)
@@ -82,23 +83,24 @@ namespace Authetication.Controllers
             }
         }
 
+        //saed
         [HttpGet]
-        [Route("Register")]
-        public IHttpActionResult Register(string userName, string pass)
+        [Route("ChangePassword")]
+        public IHttpActionResult ChangePassword(string token, string oldpassword, string newPassword)
         {
-            if (userName == null || pass == null)
+            if (token == null || newPassword == null)
             {
-                return BadRequest("usr name or pass missing");
+                return BadRequest("user token or pass missing");
             }
 
-            string token;
+            string newToken;
             try
             {
-                token = _userMng.Add(userName, pass);
-                if (string.IsNullOrEmpty(token))
-                    return BadRequest("Registration to database failed.");
-                
-                return Content(HttpStatusCode.OK, token);
+                newToken = _userMng.ChangePassword(token, oldpassword, newPassword);
+                if (string.IsNullOrEmpty(newToken))
+                    return BadRequest("failed to change password");
+
+                return Content(HttpStatusCode.OK, newToken);
             }
 
             catch (UserException e)

@@ -29,19 +29,11 @@ namespace BL.Dal
             return newUser;
         }
 
-        public void Update(User newUser)
+        public User Update(User updateUser)
         {
-            _dynamoService.Update<User>(newUser);
+            _dynamoService.Update<User>(updateUser);
+            return updateUser;
         }
-
-
-
-        ////public IEnumerable<DVD> SearchDvds(string title, int releaseYear)
-        ////{
-        ////    IEnumerable<DVD> filteredDvds = _dynamoService.DbContext.Query<DVD>(title, QueryOperator.Equal, releaseYear);
-
-        ////    return filteredDvds;
-        ////}
 
     }
 }

@@ -25,7 +25,7 @@ namespace IdentityBL
             };
         }
 
-        public void AddOrUpdate<T>(T item) where T : new()
+        public void Add<T>(T item) where T : new()
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
             {
@@ -33,11 +33,11 @@ namespace IdentityBL
             }
         }
 
-        public IEnumerable<T> Scan<T>() where T : class
+        public void AddOrUpdate<T>(T item) where T : new()
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
             {
-                return context.Scan<T>();
+                context.Save(item);
             }
         }
 
@@ -57,7 +57,7 @@ namespace IdentityBL
                 return t;
             }
         }
-        
+
         public T Update<T>(string key, T item) where T : class
         {
             using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
@@ -89,15 +89,14 @@ namespace IdentityBL
             }
 
         }
-        
 
-
-
-
-
-
-
-
+        public IEnumerable<T> Scan<T>() where T : class
+        {
+            using (DynamoDBContext context = new DynamoDBContext(_client, _conf))
+            {
+                return context.Scan<T>();
+            }
+        }
 
     }
 

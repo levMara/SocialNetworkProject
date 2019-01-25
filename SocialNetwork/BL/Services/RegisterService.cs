@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BL.Manageres
 {
-    public class RegisterService : IRegister
+    public class RegisterService : IUserNameCheck, IPassCheck
     {
         UserService _userService;
 
@@ -52,6 +52,13 @@ namespace BL.Manageres
         public bool IsUserNameValid(string userName)
         {
             if (userName.Length < 3)
+                return false;
+            return true;
+        }
+
+        public bool IsNewPass(string oldPass, string newPass)
+        {
+            if (oldPass == newPass)
                 return false;
             return true;
         }

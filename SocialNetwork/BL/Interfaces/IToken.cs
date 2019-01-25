@@ -11,6 +11,7 @@ namespace BL.Interfaces
         bool Verify(string token);
 
         string DecodeUserId(string token);
+
         string RefreshToken(string token);
     }
 }
