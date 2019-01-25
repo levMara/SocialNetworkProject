@@ -19,15 +19,11 @@ namespace WebApplication4.BL
 
     public class WebAPIAccess
     {
-
         private Uri apiServerUri = null;
-
 
         public WebAPIAccess(string apiServerAddress)
         {
-
             apiServerUri = new Uri(apiServerAddress);
-
         }
         
 
@@ -47,7 +43,6 @@ namespace WebApplication4.BL
                     throw new ConnectionError();
                 }
                 
-
             }
         }
 

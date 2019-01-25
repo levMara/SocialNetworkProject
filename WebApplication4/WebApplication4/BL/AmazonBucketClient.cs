@@ -25,25 +25,7 @@ namespace WebApplication4.BL
         {
             s3Client = new AmazonS3Client(bucketRegion);
         }
-
-        public string UploadFile(byte[] data, string FileKey)
-        {
-            using (s3Client)
-            {
-                var request = new PutObjectRequest();
-                request.BucketName = bucketName;
-                request.Key = FileKey;
-                request.CannedACL = S3CannedACL.PublicReadWrite;
-
-                using (var ms = new MemoryStream(data))
-                {
-                    request.InputStream = ms;
-                    s3Client.PutObject(request);
-
-                    return Path.Combine(hostUrl, bucketName, FileKey);
-                }
-            }
-        }
+        
         public string UploadFile(Stream inputStream, string FileKey)
         {
             using (s3Client)

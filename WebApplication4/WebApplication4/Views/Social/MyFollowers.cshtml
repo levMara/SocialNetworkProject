@@ -26,49 +26,49 @@
 @Html.ValidationSummary("", new { @class = "text-danger" })
 
 <div>
-@if (Model != null)
-{
-    if (Model.Followers != null)
+    @if (Model != null)
     {
-        <h4>Manage your followers</h4>
-        using (Html.BeginForm("MyFollowers", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        if (Model.Followers != null)
         {
-            <table>
-                @foreach (FollowerModel user in Model.Followers)
-                {
-                    @Html.HiddenFor(m => m.FollowingAction, new { id = "FollowingAction" })
-                    @Html.HiddenFor(m => m.FollowBackUserId, new { id = "FollowBackUserId" })
-                    @Html.HiddenFor(m => m.UnfollowUserId, new { id = "UnfollowUserId" })
-                    @Html.HiddenFor(m => m.BlockUserId, new { id = "BlockUserId" })
-                    <tr>
-                        <td>@user.UserFullName</td>
-                        <td></td>
-                        @if (user.Followed)
-                        {
-                            <td>
-                                <input type="submit" class="btn btn-default" value="Unfollow" onclick="javascipt: unfollow_click(@user.UserId);" />
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                <input type="submit" class="btn btn-default" value="Follow Back" onclick="javascipt: followBack_click(@user.UserId);" />
-                            </td>
-                        }
+            <h4>Manage your followers</h4>
+            using (Html.BeginForm("MyFollowers", "Social", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                <table>
+                    @foreach (FollowerModel user in Model.Followers)
+                    {
+                        @Html.HiddenFor(m => m.FollowingAction, new { id = "FollowingAction" })
+                        @Html.HiddenFor(m => m.FollowBackUserId, new { id = "FollowBackUserId" })
+                        @Html.HiddenFor(m => m.UnfollowUserId, new { id = "UnfollowUserId" })
+                        @Html.HiddenFor(m => m.BlockUserId, new { id = "BlockUserId" })
+                        <tr>
+                            <td>@user.Name</td>
+                            <td></td>
+                            @if (user.UserFollowsHim)
+                            {
+                                <td>
+                                    <input type="submit" class="btn btn-default" value="Unfollow" onclick="javascipt: unfollow_click('@user.Id');" />
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <input type="submit" class="btn btn-default" value="Follow Back" onclick="javascipt: followBack_click('@user.Id');" />
+                                </td>
+                            }
 
-                        <td>
-                            <input type="submit"  class="btn btn-default" value="Block" onclick="javascript: block_click(@user.UserId);" />
-                        </td>
-                    </tr>
-                }
-            </table>
+                            <td>
+                                <input type="submit" class="btn btn-default" value="Block" onclick="javascript: block_click('@user.Id');" />
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+        }
+        else
+        {
+            <h4> You don't have any blocked users</h4>
         }
     }
-    else
-    {
-        <h4> You don't have any blocked users</h4>
-    }
-}
 
 
 </div>

@@ -132,7 +132,7 @@ namespace Identity.Controllers
                 client.BaseAddress = new Uri("http://localhost:49922/");
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var res = client.GetAsync($"api/token/decodeUserId?token={token}").Result;
+                var res = await client.GetAsync($"api/token/decodeUserId?token={token}");
                 if (res.IsSuccessStatusCode)
                 {
                    return await res.Content.ReadAsAsync<string>();              

@@ -23,10 +23,10 @@
                     {
                         @Html.HiddenFor(m => m.UnfollowUserId, new { id = "UnfollowUserId" })
                         <tr>
-                            <td>@user.UserFullName</td>
+                            <td>@user.Name</td>
                             <td></td>
                             <td>
-                                <input type="submit" value="Unfollow" class="btn btn-default" onclick="document.getElementById('UnfollowUserId').value=@user.UserId;" />
+                                <input type="submit" value="Unfollow" class="btn btn-default" onclick="document.getElementById('UnfollowUserId').value='@user.Id';" />
                             </td>
                         </tr>
                     }

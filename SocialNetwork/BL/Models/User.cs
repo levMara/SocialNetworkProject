@@ -15,7 +15,7 @@ namespace Authetication.Models
         public string UserId { get; set; }
 
         public string Password { get; set; }
-        
+
     }
 
     [DynamoDBTable("FacebookUsers")]

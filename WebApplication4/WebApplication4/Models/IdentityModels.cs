@@ -13,14 +13,15 @@ namespace WebApplication4.Models
     public class UserIdAndName
     {
         public UserIdAndName() { }
-        public UserIdAndName(string userId, string userFullName)
+        public UserIdAndName(string id, string name)
         {
-            UserId = userId;
-            UserFullName = userFullName;
+            Id = id;
+            Name = name;
         }
 
-        public string UserId { get; set; }
-        public string UserFullName { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public int FollowersCount { get; set; }
     }
 
     public class FullUser

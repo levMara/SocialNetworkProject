@@ -23,9 +23,9 @@
                 {
                     @Html.HiddenFor(m => m.UnblockUserId, new { id = "UnblockUserId" })
                     <tr>
-                        <td>@user.UserFullName</td>
+                        <td>@user.Name</td>
                         <td>
-                            <input type="submit" value="Unblock" class="btn btn-default" onclick="document.getElementById('UnblockUserId').value=@user.UserId;"/>
+                            <input type="submit" value="Unblock" class="btn btn-default" onclick="document.getElementById('UnblockUserId').value='@user.Id';"/>
                         </td>
                     </tr>
                 }

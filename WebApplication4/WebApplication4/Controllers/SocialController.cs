@@ -11,19 +11,25 @@ namespace WebApplication4.Controllers
 {
     public class SocialController : ControllerBase
     {
+               
+        [HttpPost]
+        public async Task<ActionResult> FollowUser(string otherUserId)
+        {
+            var followResult = await SocialManager.FollowUser(UserToken, otherUserId);
+            return Json(followResult);
+        }
 
-        public async Task<ActionResult> MyFollows(MyFollowsMessageId? message)
+        [HttpPost]
+        public async Task<ActionResult> UnfollowUser(string otherUserId)
+        {
+            var unfollowResult = await SocialManager.UnfollowUser(UserToken, otherUserId);
+            return Json(unfollowResult);
+        }
+
+        public async Task<ActionResult> MyFollows()
         {
             if (!(await Authorized()))
                 return AccountLogin();
-
-            ViewBag.StatusMessage =
-            message == MyFollowsMessageId.UserUnfollowSuccess ? "User unfollowed successfully."
-            : message == MyFollowsMessageId.Error ? "An error has occurred."
-            : "";
-
-            if (message != null && message == MyFollowsMessageId.Error)
-                return View();
 
             var result = await SocialManager.GetUserFollows(UserToken);
             if (result.Success)
@@ -33,7 +39,7 @@ namespace WebApplication4.Controllers
             }
             else
             {
-                return View(MyFollowsMessageId.Error);
+                return ErrorView(result.UserErrorMessage);
             }
 
         }
@@ -44,38 +50,26 @@ namespace WebApplication4.Controllers
             if (!(await Authorized()))
                 return AccountLogin();
 
-            if (!ModelState.IsValid)
-                return View();
-
             if (model.UnfollowUserId == null)
             {
                 AddError("No user was selected.");
-                return View();
+                return View(model);
             }
 
             var result = await SocialManager.UnfollowUser(UserToken, model.UnfollowUserId);
-            if (result)
-                return View(MyFollowsMessageId.UserUnfollowSuccess);
+
+            if (result.Success)
+                return SuccessView("User Unfollowed successfully");
             else
-            {
-                return View(new { Message = MyFollowsMessageId.Error });
-            }
+                return ErrorView();
+
         }
 
-        public async Task<ActionResult> MyFollowers(MyFollowersMessageId? message)
+        public async Task<ActionResult> MyFollowers()
         {
             if (!(await Authorized()))
                 return AccountLogin();
-
-            ViewBag.StatusMessage =
-            message == MyFollowersMessageId.FollowBackUserSuccess ? "User followed back successfully."
-            : message == MyFollowersMessageId.UnfollowUserSuccess ? "User unfollowed successfully."
-            : message == MyFollowersMessageId.BlockUserSuccess ? "User blocked successfully."
-            : message == MyFollowersMessageId.Error ? "An error has occurred."
-            : "";
-
-            if (message != null && message == MyFollowersMessageId.Error)
-                return View();
+            
 
             var result = await SocialManager.GetUserFollowers(UserToken);
             if (result.Success)
@@ -85,7 +79,7 @@ namespace WebApplication4.Controllers
             }
             else
             {
-                return View(MyFollowersMessageId.Error);
+                return ErrorView(result.UserErrorMessage);
             }
         }
 
@@ -94,71 +88,62 @@ namespace WebApplication4.Controllers
         {
             if (!(await Authorized()))
                 return AccountLogin();
-
-            if (!ModelState.IsValid)
-                return View();
-
+            
             if (model.FollowingAction == MyFollowersAction.Block)
             {
                 if (model.BlockUserId == null)
                 {
                     AddError("No user was selected.");
-                    return View();
+                    return View(model);
                 }
                 var result = await SocialManager.BlockUser(UserToken, model.BlockUserId);
+
                 if (result)
-                    return View(MyFollowersMessageId.BlockUserSuccess);
+                    return SuccessView("User blocked successfully");
                 else
-                    return View(MyFollowersMessageId.Error);
+                    return ErrorView();
             }
             else if (model.FollowingAction == MyFollowersAction.FollowBack)
             {
                 if (model.FollowBackUserId == null)
                 {
                     AddError("No user was selected.");
-                    return View();
+                    return View(model);
                 }
-                var result = await SocialManager.FollowUser(UserToken, model.BlockUserId);
-                if (result)
-                    return View(MyFollowersMessageId.FollowBackUserSuccess);
+                var result = await SocialManager.FollowUser(UserToken, model.FollowBackUserId);
+                if (result.Success) {
+                    return SuccessView("User followed successfully");
+                }
                 else
-                    return View(MyFollowersMessageId.Error);
+                    return ErrorView();
             }
             else if (model.FollowingAction == MyFollowersAction.Unfollow)
             {
                 if (model.UnfollowUserId == null)
                 {
                     AddError("No user was selected.");
-                    return View();
+                    return View(model);
                 }
                 var result = await SocialManager.UnfollowUser(UserToken, model.UnfollowUserId);
-                if (result)
-                    return View(MyFollowersMessageId.UnfollowUserSuccess);
+                if (result.Success)
+                    return SuccessView("User Unfollowed successfully");
                 else
-                    return View(MyFollowersMessageId.Error);
+                    return ErrorView();
             }
             else
             {
                 AddError("No action was selected.");
-                return View();
+                return View(model);
             }
 
         }
 
 
-        public async Task<ActionResult> BlockedUsers(BlockedUsersMessageId? message)
+        public async Task<ActionResult> BlockedUsers()
         {
 
             if (!(await Authorized()))
                 return AccountLogin();
-
-            ViewBag.StatusMessage =
-            message == BlockedUsersMessageId.UnblockUserSuccess ? "User unblocked successfully."
-            : message == BlockedUsersMessageId.Error ? "An error has occurred."
-            : "";
-
-            if (message != null && message == BlockedUsersMessageId.Error)
-                return View();
 
             var result = await SocialManager.GetBlockedUsers(UserToken);
             if (result.Success)
@@ -168,60 +153,31 @@ namespace WebApplication4.Controllers
             }
             else
             {
-                AddError(result.UserErrorMessage);
-                return View(BlockedUsersMessageId.Error);
+                return ErrorView(result.UserErrorMessage);
             }
         }
-
 
         [HttpPost]
         public async Task<ActionResult> BlockedUsers(BlockedUsersViewModel model)
         {
             if (!(await Authorized()))
                 return AccountLogin();
-
-            if (!ModelState.IsValid)
-                return View();
-
+            
             if (model.UnblockUserId == null)
             {
                 AddError("No user was selected.");
-                return View();
+                return View(model);
             }
             else
             {
                 var result = await SocialManager.UnblockUser(UserToken, model.UnblockUserId);
                 if (result)
-                    return View(BlockedUsersMessageId.UnblockUserSuccess);
+                    return SuccessView("User Unblocked successfully");
                 else
-                    return View(new { Message = BlockedUsersMessageId.Error });
+                    return ErrorView();
             }
         }
-
-
-        #region Helpers
-
-        public enum MyFollowsMessageId
-        {
-            UserUnfollowSuccess,
-            Error
-        }
-
-        public enum MyFollowersMessageId
-        {
-            FollowBackUserSuccess,
-            UnfollowUserSuccess,
-            BlockUserSuccess,
-            Error
-        }
-
-        public enum BlockedUsersMessageId
-        {
-            UnblockUserSuccess,
-            Error
-        }
-
-        #endregion
+        
     }
 
 }

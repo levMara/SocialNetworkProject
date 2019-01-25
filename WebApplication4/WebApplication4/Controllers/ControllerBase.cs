@@ -77,5 +77,18 @@ namespace WebApplication4.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+
+        protected ActionResult ErrorView(string message = null)
+        {
+            Session["ErrorMessage"] = message;
+            return View("Error");
+        }
+
+        protected ActionResult SuccessView(string message = null)
+        {
+            Session["SuccessMessage"] = message;
+            return View("Success");
+        }
     }
 }

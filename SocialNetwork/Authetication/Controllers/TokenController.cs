@@ -79,7 +79,7 @@ namespace Authetication.Controllers
 
             catch (Exception e)
             {
-                return Content(HttpStatusCode.BadRequest, e.Message);
+                return Content(HttpStatusCode.InternalServerError, e.Message);
             }
         }
     }

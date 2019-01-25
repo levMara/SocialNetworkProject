@@ -8,6 +8,15 @@ namespace WebApplication4.Models
 
     public class BlockedUsersViewModel
     {
+        public BlockedUsersViewModel()
+        {
+        }
+
+        public BlockedUsersViewModel(IEnumerable<UserIdAndName> users)
+        {
+            Users = users;
+        }
+
         public string UnblockUserId { get; set; }
         public IEnumerable<UserIdAndName> Users { get; set; }
     }
@@ -22,16 +31,26 @@ namespace WebApplication4.Models
     public class FollowerModel: UserIdAndName
     {
         public FollowerModel() { }
-        public FollowerModel(string userId, string userFullName,bool followed):base(userId,userFullName)
+        public FollowerModel(string userId, string userFullName,bool userFollowsHim) :base(userId,userFullName)
         {
-            Followed = followed;
+            UserFollowsHim = userFollowsHim;
         }
 
         //I follow him
-        public bool Followed { get; set; }
+        public bool UserFollowsHim { get; set; }
     }
+
     public class MyFollowersViewModel
     {
+        public MyFollowersViewModel()
+        {
+        }
+
+        public MyFollowersViewModel(IEnumerable<FollowerModel> followers)
+        {
+            Followers = followers;
+        }
+
         public MyFollowersAction FollowingAction { get; set; }
         public string FollowBackUserId { get; set; }
         public string UnfollowUserId { get; set; }
@@ -41,6 +60,15 @@ namespace WebApplication4.Models
 
     public class MyFollowsViewModel
     {
+        public MyFollowsViewModel()
+        {
+        }
+
+        public MyFollowsViewModel( IEnumerable<UserIdAndName> follows)
+        {
+            Follows = follows;
+        }
+
         public string UnfollowUserId { get; set; }
         public IEnumerable<UserIdAndName> Follows { get; set; }
     }

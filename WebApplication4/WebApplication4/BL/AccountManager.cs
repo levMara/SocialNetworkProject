@@ -113,15 +113,12 @@ namespace WebApplication4.BL
 
         internal static async Task<ChangeUserDetailsResult> ChangeUserDetailsAsync(string userToken, FullUser userDetails)
         {
+            var changeDetailsResult = await identityServiceAccess.PostData<FullUser>($"identity/registerorupdate?token={userToken}", userDetails);//TODO check
 
-            Tuple<HttpResponseMessage, FullUser> changeDetailsResult;
-
-            changeDetailsResult = await identityServiceAccess.PostData<FullUser, FullUser>($"identity/registerorupdate?token={userToken}", userDetails);//TODO check
-
-            if (changeDetailsResult.Item1.IsSuccessStatusCode)
+            if (changeDetailsResult.IsSuccessStatusCode)
                 return new ChangeUserDetailsResult(true);
             else
-                return (await (ReturnErrorResult<ChangeUserDetailsResult>(changeDetailsResult.Item1, "failed to set user info")));
+                return (await (ReturnErrorResult<ChangeUserDetailsResult>(changeDetailsResult, "failed to set user info")));
 
 
         }
@@ -210,6 +207,7 @@ namespace WebApplication4.BL
             else
                 return (await (ReturnErrorResult<GetUserIdsAndNamesResult>(result.Item1, "failed to get user ids and names")));
         }
+
     }
 
 

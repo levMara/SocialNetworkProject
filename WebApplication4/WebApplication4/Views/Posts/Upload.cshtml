@@ -40,18 +40,20 @@
         
         var SelectUserList = document.getElementById("SelectUserList")
         var selectedValue = SelectUserList.value;
-        var selectedText = SelectUserList.options[SelectUserList.selectedIndex].text;
-        var viewTextNode = document.createElement("image");
-        viewTextNode.setAttribute("class", "mention");
-        viewTextNode.setAttribute("src", selectedText);
-        viewTextNode.setAttribute("alt", selectedText);
-        viewTextNode.setAttribute("user-id", selectedValue);
+        if (selectedValue != "") {
+            var selectedText = SelectUserList.options[SelectUserList.selectedIndex].text;
+            var viewTextNode = document.createElement("image");
+            viewTextNode.setAttribute("class", "mention");
+            viewTextNode.setAttribute("src", selectedText);
+            viewTextNode.setAttribute("alt", selectedText);
+            viewTextNode.setAttribute("user-id", selectedValue);
 
-        var mainDiv = document.getElementById("PostContentDiv");
-        mainDiv.focus();
-        insertNodeAtCursor(viewTextNode);
+            var mainDiv = document.getElementById("PostContentDiv");
+            mainDiv.focus();
+            insertNodeAtCursor(viewTextNode);
 
-        document.getElementById("select-user").style.display = "none";
+            document.getElementById("select-user").style.display = "none";
+        }
     }
 
     function postcontent_onkeypress(e) {
@@ -112,15 +114,22 @@
             @Html.TextBoxFor(m => m.ImageFile, new { type = "file", @class = "form-control" })
         </div>
     </div>
+    <div class="form-group">
+            @Html.LabelFor(m => m.PostPermission, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.EnumDropDownListFor(m => m.PostPermission, new { @class = "form-control" })
+            </div>
+        </div>
 
     @Html.HiddenFor(m => m.JsonMentions, new { id = "JsonMentions" })
 
     <div class="form-group" id="select-user">
         <label for="SelectUser" class="col-md-2 control-label">Select a user</label>
         <select id="SelectUserList" onchange="javascript: SelectUserList_change();" class="form-control">
+            <option></option>
             @foreach (var item in ViewBag.Mentions)
             {
-            <option value=@item.UserId>@item.UserFullName</option>
+            <option value=@item.Id>@item.Name</option>
             }
         </select>
     </div>

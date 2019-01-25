@@ -42,8 +42,6 @@ namespace WebApplication4.Controllers
         {
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, change to shouldLockout: true
                 var result = await AccountManager.PasswordSignInAsync(model.Username, model.Password);
                 if (result.Success)
                 {
@@ -70,8 +68,6 @@ namespace WebApplication4.Controllers
         [HttpPost]
         public async Task<bool> FacebookLogin(FacebookLoginModel model)
         {
-            
-
             var result = await AccountManager.FacebookLoginAsync(model.AccessToken, new FullUser(model.FullName, model.BirthDay, model.City, model.WorkPlace));
             if (result.Success)
             {
@@ -116,9 +112,8 @@ namespace WebApplication4.Controllers
                 return View(model);
             }
 
-            // If we got this far, something failed, redisplay form
+            
         }
-
 
         
         //

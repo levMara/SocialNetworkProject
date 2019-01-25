@@ -1,0 +1,136 @@
+﻿@using WebApplication4.Models
+@model WebApplication4.Models.UploadCommentViewModel
+@{
+    ViewBag.Title = "Comment on Post";
+}
+<style>
+    .textarea {
+        -moz-appearance: textfield-multiline;
+        -webkit-appearance: textarea;
+        border: 1px solid gray;
+        font: medium -moz-fixed;
+        font: -webkit-small-control;
+        height: 200px;
+        overflow: auto;
+        padding: 2px;
+        resize: both;
+        width: 300px;
+    }
+
+    #select-user {
+        display: none
+    }
+</style>
+<script>
+
+
+    function insertNodeAtCursor(node) {
+        var sel, range, html;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.insertNode(node);
+                sel.removeAllRanges();
+            }
+        }
+    }
+
+    function SelectUserList_change() {
+
+        var SelectUserList = document.getElementById("SelectUserList")
+        var selectedValue = SelectUserList.value;
+        var selectedText = SelectUserList.options[SelectUserList.selectedIndex].text;
+        var viewTextNode = document.createElement("image");
+        viewTextNode.setAttribute("class", "mention");
+        viewTextNode.setAttribute("src", selectedText);
+        viewTextNode.setAttribute("alt", selectedText);
+        viewTextNode.setAttribute("user-id", selectedValue);
+
+        var mainDiv = document.getElementById("CommentContentDiv");
+        mainDiv.focus();
+        insertNodeAtCursor(viewTextNode);
+
+        document.getElementById("select-user").style.display = "none";
+    }
+
+    function commentcontent_onkeypress(e) {
+        if (e.key == '@@') {
+            document.getElementById("select-user").style.display = "block";
+        }
+    }
+
+    function onSubmit() {
+        var elements = document.getElementsByClassName("mention");
+        var jsonMentions = document.getElementById("JsonMentions");
+        var mainDiv = document.getElementById("CommentContentDiv");
+
+        var arrMentions=[];
+        for (var i = 0; i < elements.length; i++) {
+            arrMentions.push(elements[i].getAttribute("user-id"));
+        }
+        console.log(jsonMentions);
+        jsonMentions.value = JSON.stringify(arrMentions);
+
+        while (mainDiv.getElementsByClassName("mention").length>0) {
+            var children = mainDiv.getElementsByClassName("mention");
+
+            console.log(mainDiv.innerHTML);
+            for (var i = 0; i < children.length; i++) {
+                var oldChild = children[i];
+                var newChild = document.createElement("span");
+
+                newChild.innerText = oldChild.getAttribute("src");
+                children[i].parentNode.replaceChild(newChild, oldChild)
+            }
+        }
+        document.getElementById("CommentContent").value = mainDiv.innerText;
+        console.log(mainDiv.innerHTML);
+
+    }
+
+
+
+
+</script>
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("UploadComment", "Posts", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
+            {
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+    @Html.HiddenFor(m => m.PostId, new { Id = "PostId" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.CommentContent, new { @class = "col-md-2 control-label" })
+        <div id="CommentContentDiv" onkeypress="commentcontent_onkeypress(event)" class="textarea col-md-10" contenteditable="true">
+        </div>
+        @Html.HiddenFor(m => m.CommentContent, new { id = "CommentContent" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ImageFile, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ImageFile, new { type = "file", @class = "form-control" })
+        </div>
+    </div>
+
+    @Html.HiddenFor(m => m.JsonMentions, new { id = "JsonMentions" })
+
+    <div class="form-group" id="select-user">
+        <label for="SelectUser" class="col-md-2 control-label">Select a user</label>
+        <select id="SelectUserList" onchange="javascript: SelectUserList_change();" class="form-control">
+            @foreach (var item in ViewBag.Mentions)
+            {
+                <option value=@item.Id>@item.Name</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" onclick="javascript: onSubmit();" class="btn btn-default" value="Upload" />
+        </div>
+    </div>
+
+}
+

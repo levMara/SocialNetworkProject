@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+        
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
@@ -27,15 +27,45 @@
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
-        </div>
+        
     </div>
     <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+        <div class="row">
+            
+            @if (Session["displayuser"] != null && Session["displayuser"].GetType() == typeof(WebApplication4.Models.FullUser))
+            {
+                <div class="col-md-9">
+                    @RenderBody()
+                </div>
+                <div class="col-md-3">
+                    <br />
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>Notifications</h4>
+                        </div>
+                        <div class="panel-body">
+                            Notification 1
+                            <hr />
+                            Notification 2<hr />
+                            Notification 3<hr />
+                            Notification 4<hr />
+                            Notification 5
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col">
+                    @RenderBody()
+                </div>
+            }
+        </div>
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>
+        </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
