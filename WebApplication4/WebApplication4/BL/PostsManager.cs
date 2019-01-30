@@ -71,6 +71,16 @@ namespace WebApplication4.BL
             public PostModel Post { get; set; }
         }
 
+        public class GetPostUploaderIdResult : ResultBase
+        {
+            public GetPostUploaderIdResult() { }
+            public GetPostUploaderIdResult(bool success, string uploaderId, string userErrorMessage = null) : base(success, userErrorMessage)
+            {
+                this.UploaderId = uploaderId;
+            }
+            public string UploaderId { get; set; }
+        }
+
         #endregion
 
         public static async Task<GetPostByIdResult> GetPostById(string userToken, string postId)
@@ -89,11 +99,28 @@ namespace WebApplication4.BL
 
         }
 
+         public static async Task<GetPostUploaderIdResult> GetPostUploaderId(string userToken, string postId)
+        {
+            var result = await socialServiceAccess.GetData<string>($"post/GetUploaderId?token={userToken}&postid={postId}");
+            if (result.Item1.IsSuccessStatusCode)
+                return new GetPostUploaderIdResult(true, result.Item2);
+            else
+                return (await (ReturnErrorResult<GetPostUploaderIdResult>(result.Item1, "failed to get post uploader id")));
+
+        }
+        
         public static async Task<LikePostResult> LikePost(string userToken, string postId)
         {
             var result = await socialServiceAccess.GetData<int>($"post/LikePost?token={userToken}&postid={postId}");
             if (result.Item1.IsSuccessStatusCode)
+            {
+                var uploaderIdResult = await GetPostUploaderId(userToken, postId);
+                if (uploaderIdResult.Success)
+                {
+                    await NotificationManager.PostLiked(userToken, uploaderIdResult.UploaderId);
+                }
                 return new LikePostResult(true, result.Item2);
+            }
             else
                 return (await (ReturnErrorResult<LikePostResult>(result.Item1, "failed to add like to post")));
         }

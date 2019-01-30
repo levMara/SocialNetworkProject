@@ -100,5 +100,31 @@ namespace SocialServer.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetUploaderId")]
+        public async Task<IHttpActionResult> GetUploaderId(string token,string postId)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(postId))
+                return BadRequest("Token or post id missing.");
+
+            string userId = await Utils.VerifyAndDecrypt(token);
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest("Token not valid.");
+
+            try
+            {
+                string uploaderId = _postMng.GetUploader(postId);
+                return Ok(uploaderId);
+            }
+            catch (IncorrectDetailsException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return Content(HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
     }
 }

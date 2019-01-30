@@ -82,6 +82,17 @@ namespace SocialBL.Dal
             return query.FirstOrDefault();
         }
 
+        internal string GetUploader(string postId)
+        {
+            var query = _client.Cypher
+                 .Match("(u:User)-[:Write]->(p:Post)")
+                 .Where((Post p) => p.Id == postId)
+                 .Return((u) => u.As<User>())
+                 .Results.ToList();
+
+            return query.FirstOrDefault().Id;
+        }
+
         internal List<Post> GetMyPosts(string userId)
         {
             var query = _client.Cypher

@@ -148,7 +148,10 @@ namespace WebApplication4.BL
         {
             var result = await socialServiceAccess.GetData<int>($"useraction/follow?token={userToken}&otherUserId={otherUserId}");
             if (result.Item1.IsSuccessStatusCode)
+            {
+                await NotificationManager.UserFollowed(userToken, otherUserId);
                 return new FollowUserResult(true, result.Item2);
+            }
             else
                 return new FollowUserResult(false, 0, "failed to get no. of follows");
         }

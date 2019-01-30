@@ -14,6 +14,7 @@ namespace SocialBL.Dal
         string _uri = "http://ec2-18-221-16-181.us-east-2.compute.amazonaws.com:7474/db/data";
         string _user = "neo4j";
         string _pass = "lm770";
+        private const int USERS_COUNT_TRIGGER=4;
 
         public Neo4jFeedService()
         {
@@ -38,6 +39,7 @@ namespace SocialBL.Dal
         internal List<Post> GetFeed(string userId)
         {
             List<Post> feed = new List<Post>();
+            feed.AddRange(GetPostsFriendsLikeWithX(userId));
             feed.AddRange(GetUserPosts(userId));
             feed.AddRange(GetFollowsPosts(userId));
             feed.AddRange(GetMentionPosts(userId));
@@ -48,6 +50,46 @@ namespace SocialBL.Dal
             .OrderByDescending(post => post.Date).ToList();
             return feed;
             
+        }
+
+        private List<Post> GetPostsFriendsLikeWithX(string userId)
+        {
+            var data = _client.Cypher
+                .Match("(u:User {Id:'" + userId + "'})")
+                .OptionalMatch("(u)-[:Follow]->(friend:User)-[lp:Like]->(p:Post)")
+                .Where("p.Permission = 'all' and not (u)-[:Block]-(:User)-[:Write]->(p:Post)")
+                .OptionalMatch("(u)-[:Follow]->(friend:User)-[lc:Like]->(c:Comment)<-[:Has_comment]-(p1:Post)")
+                .Where("p1.Permission = 'all' and not (u)-[:Block]-(:User)-[:Write]->(p1:Post)-[:Has_comment]->(c:Comment)")
+                .ReturnDistinct((lp, lc, p, p1) => new
+                {
+                    numOfPostLike = lp.Count(),
+                    numOfCommentLike = lc.Count(),
+                    posts = p.CollectAs<Post>(),
+                    postsComment = p1.CollectAs<Post>()
+                })
+                .Results.FirstOrDefault();
+
+            return CheckX(data.numOfPostLike, data.numOfCommentLike, data.posts, data.postsComment,USERS_COUNT_TRIGGER)??new List<Post>();
+        }
+
+        private List<Post> CheckX(long numOfPostLike, long numOfCommentLike, IEnumerable<Post> posts, IEnumerable<Post> postsComment, int x)
+        {
+            if (numOfPostLike < x & numOfCommentLike < x)
+                return null;
+
+            List<Post> postsList = new List<Post>();
+
+            if (numOfPostLike > x & numOfCommentLike > x)
+            {
+                postsList.AddRange(posts);
+                postsList.AddRange(postsComment);
+            }
+            else if (numOfPostLike > x)
+                postsList.AddRange(posts);
+            else
+                postsList.AddRange(postsComment);
+
+            return postsList;
         }
 
         private List<Post> GetMentionComment(string userId)

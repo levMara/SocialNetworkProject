@@ -65,5 +65,13 @@ namespace SocialBL.Manageres
 
             return _Neo4jpostService.GetPost(postId);
         }
+
+        public string GetUploader(string postId)
+        {
+            if (string.IsNullOrEmpty(postId))
+                throw new IncorrectDetailsException("post id empty.");
+
+            return _Neo4jpostService.GetUploader(postId);
+        }
     }
 }

@@ -97,6 +97,7 @@ namespace WebApplication4.BL
 
         internal static async Task<RegisterResult> RegisterAsync(string username, string password, FullUser userDetails)
         {
+            //registering a user logs it in automatically
             var registerResult = await authServiceAccess.GetData<string>($"login/register?username={username}&pass={password}");//TODO check
             if (registerResult.Item1.IsSuccessStatusCode)
             {
@@ -179,6 +180,14 @@ namespace WebApplication4.BL
             return null;
 
         }
+        public static async Task<FullUser> GetOtherUserInfoAsync(string userToken,string otherUserId)
+        {
+            var result = await identityServiceAccess.GetData<FullUser>($"identity/GetOther?token={userToken}&otherUserId={otherUserId}");
+            if (result.Item1.IsSuccessStatusCode)
+                return result.Item2;
+            return null;
+
+        }
 
         public async static Task<bool> IsUserAuthorizedAsync(string userToken)
         {
@@ -194,7 +203,10 @@ namespace WebApplication4.BL
 
             var newTokenResult = await authServiceAccess.GetData<string>($"token/refresh?token={userToken}");
             if (newTokenResult.Item1.IsSuccessStatusCode)
-                return newTokenResult.Item2;
+            {
+                var newToken = newTokenResult.Item2;
+                return newToken;
+            }
             return null;
 
         }
